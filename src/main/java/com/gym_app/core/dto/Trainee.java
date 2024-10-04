@@ -31,7 +31,6 @@ public class Trainee extends User{
     @Override
     public String toString() {
         return "Trainee{" + super.toString() +
-                "dateOfBirth=" + dateOfBirth +
                 ", address='" + address + '\'' +
                 '}';
     }

@@ -1,8 +1,14 @@
 package com.gym_app.core.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 
 public abstract class ServiceType {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceId;
     private User consumer;
     private User supplier;
@@ -71,12 +77,12 @@ public abstract class ServiceType {
     @Override
     public String toString() {
         return "Service{" +
-                "serviceId=" + serviceId +
-                ", consumer=" + consumer +
-                ", supplier=" + supplier +
-                ", serviceName='" + serviceName + '\'' +
-                ", serviceDate=" + serviceDate +
-                ", duration=" + duration +
+                "Id=" + serviceId +
+                ", " + consumer +
+                ", " + supplier +
+                ", " + serviceName + '\'' +
+                ", " + serviceDate +
+                ", " + duration +
                 '}';
     }
 }

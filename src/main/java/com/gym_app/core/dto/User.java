@@ -1,6 +1,12 @@
 package com.gym_app.core.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 public abstract class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String firstName;
     private String lastName;
@@ -69,11 +75,10 @@ public abstract class User {
     public String toString() {
         return "User{" +
                 "userId=" + userId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", userName='" + userName + '\'' +
+                ", " + firstName + '\'' +
+                ", " + lastName + '\'' +
+                ", user= " + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", isActive=" + isActive +
                 '}';
     }
 }

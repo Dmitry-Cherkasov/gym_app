@@ -1,5 +1,8 @@
 package com.gym_app.core.util;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class StandardCreatePolicy implements CreatePolicy{
 
     @Override

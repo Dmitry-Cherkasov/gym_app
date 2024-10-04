@@ -21,7 +21,7 @@ public class Trainer extends User{
     @Override
     public String toString() {
         return "Trainer{" + super.toString() +
-                "specialization='" + specialization + '\'' +
+                " " + specialization + '\'' +
                 '}';
     }
 }
