@@ -1,6 +1,8 @@
 --Training Types
-INSERT INTO Training_Type (Training_Type_Name) VALUES ('Fitness');
-INSERT INTO Training_Type (Training_Type_Name) VALUES ('Yoga');
-INSERT INTO Training_Type (Training_Type_Name) VALUES ('Zumba');
-INSERT INTO Training_Type (Training_Type_Name) VALUES ('Stretching');
-INSERT INTO Training_Type (Training_Type_Name) VALUES ('Resistance');
+INSERT INTO TRAINING_TYPE (TRAINING_TYPE_NAME) VALUES
+('FITNESS'),
+('YOGA'),
+('ZUMBA'),
+('STRETCHING'),
+('RESISTANCE');
+

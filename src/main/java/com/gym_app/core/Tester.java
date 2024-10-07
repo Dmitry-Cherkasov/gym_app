@@ -12,18 +12,20 @@ public class Tester {
 
     public static void main(String[] args) {
 
-        CreatePolicy cp = new StandardCreatePolicy();
-        TrainerFactory trainerFactory = new TrainerFactory(cp);
-        TraineeFactory traineeFactory = new TraineeFactory(cp);
-        Trainer trainer = trainerFactory.createTrainer("Susan", "Musan", true, TrainingType.FITNESS);
-        System.out.println(trainer);
-        Trainee trainee = traineeFactory.createTrainee("Bob", "Rob", false, LocalDate.now(), "Somwhere");
-        System.out.println(trainee);
+//        CreatePolicy cp = new StandardCreatePolicy();
+//        TrainerFactory trainerFactory = new TrainerFactory(cp);
+//        TraineeFactory traineeFactory = new TraineeFactory(cp);
+//        Trainer trainer = trainerFactory.createTrainer("Susan", "Musan", true, TrainingType.FITNESS);
+//        System.out.println(trainer);
+//        Trainee trainee = traineeFactory.createTrainee("Bob", "Rob", false, LocalDate.now(), "Somwhere");
+//        System.out.println(trainee);
+//
+//        TrainingFactory trainingFactory = new TrainingFactory();
+//        Training training = trainingFactory.createTraining(trainee, trainer, "Sunday training", TrainingType.YOGA, LocalDate.now().plusDays(2), 60);
+//        System.out.println(training);
+            TrainingType trainingType = TrainingType.valueOf("Resistance".toUpperCase());
 
-        TrainingFactory trainingFactory = new TrainingFactory();
-        Training training = trainingFactory.createTraining(trainee, trainer, "Sunday training", TrainingType.YOGA, LocalDate.now().plusDays(2), 60);
-        System.out.println(training);
-
+            System.out.println(trainingType);
 
     }
 

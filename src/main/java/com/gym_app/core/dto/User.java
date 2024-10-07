@@ -5,8 +5,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 public abstract class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String firstName;
     private String lastName;
