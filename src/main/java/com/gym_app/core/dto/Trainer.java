@@ -5,8 +5,8 @@ import com.gym_app.core.enums.TrainingType;
 public class Trainer extends User{
     private TrainingType specialization;
 
-    public Trainer(String firstName, String lastName, String userName, String password, boolean isActive, TrainingType specialization){
-        super(firstName, lastName, userName, password, isActive);
+    public Trainer(UserData userData, TrainingType specialization){
+        super(userData);
         this.specialization = specialization;
     }
 
@@ -18,10 +18,4 @@ public class Trainer extends User{
         this.specialization = specialization;
     }
 
-    @Override
-    public String toString() {
-        return "Trainer{" + super.toString() +
-                " " + specialization + '\'' +
-                '}';
-    }
 }

@@ -6,8 +6,8 @@ public class Trainee extends User{
     private LocalDate dateOfBirth;
     private String address;
 
-    public Trainee(String firstName, String lastName, String userName, String password, boolean isActive, LocalDate date, String address){
-        super(firstName, lastName, userName, password, isActive);
+    public Trainee(UserData userData, LocalDate date, String address){
+        super(userData);
         this.dateOfBirth = date;
         this.address = address;
     }
@@ -28,10 +28,4 @@ public class Trainee extends User{
         this.address = address;
     }
 
-    @Override
-    public String toString() {
-        return "Trainee{" + super.toString() +
-                ", address='" + address + '\'' +
-                '}';
-    }
 }
