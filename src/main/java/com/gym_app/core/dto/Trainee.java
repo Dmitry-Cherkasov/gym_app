@@ -1,8 +1,10 @@
 package com.gym_app.core.dto;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Trainee extends User{
+    private long id;
     private LocalDate dateOfBirth;
     private String address;
 
@@ -10,6 +12,14 @@ public class Trainee extends User{
         super(firstName, lastName, userName, password, isActive);
         this.dateOfBirth = date;
         this.address = address;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public LocalDate getDateOfBirth() {
@@ -33,5 +43,18 @@ public class Trainee extends User{
         return "Trainee{" + super.toString() +
                 ", address='" + address + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Trainee trainee = (Trainee) o;
+        return getId() == trainee.getId() && Objects.equals(getDateOfBirth(), trainee.getDateOfBirth()) && Objects.equals(getAddress(), trainee.getAddress());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getDateOfBirth(), getAddress());
     }
 }

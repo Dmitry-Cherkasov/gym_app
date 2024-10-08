@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class UserDaoImplementation implements UserDao{
+public class UserDBDaoImplementation implements UserDao{
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDaoImplementation(DataSource dataSource){
+    public UserDBDaoImplementation(DataSource dataSource){
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
@@ -35,6 +35,11 @@ public class UserDaoImplementation implements UserDao{
 
     @Override
     public void delete(User user) {
+
+    }
+
+    @Override
+    public void update(User user, String[] params) {
 
     }
 }

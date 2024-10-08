@@ -2,6 +2,8 @@ package com.gym_app.core.dto;
 
 import com.gym_app.core.enums.TrainingType;
 
+import java.util.Objects;
+
 public class Trainer extends User{
     private TrainingType specialization;
 
@@ -18,10 +20,13 @@ public class Trainer extends User{
         this.specialization = specialization;
     }
 
+
     @Override
     public String toString() {
         return "Trainer{" + super.toString() +
                 " " + specialization + '\'' +
                 '}';
     }
+
+
 }

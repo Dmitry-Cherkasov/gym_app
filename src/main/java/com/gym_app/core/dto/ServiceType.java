@@ -1,14 +1,8 @@
 package com.gym_app.core.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
 import java.time.LocalDate;
 
 public abstract class ServiceType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceId;
     private User consumer;
     private User supplier;

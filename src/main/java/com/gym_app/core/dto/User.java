@@ -1,10 +1,6 @@
 package com.gym_app.core.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-public abstract class User {
+public class User extends AbstractUser{
     private Long userId;
     private String firstName;
     private String lastName;

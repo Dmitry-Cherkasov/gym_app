@@ -48,5 +48,10 @@ public class TrainingTypeDaoImplementation implements TrainingTypeDao {
     @Override
     public void delete(TrainingType trainingType) {
     }
+
+    @Override
+    public void update(TrainingType trainingType, String[] params) {
+
+    }
 }
 
