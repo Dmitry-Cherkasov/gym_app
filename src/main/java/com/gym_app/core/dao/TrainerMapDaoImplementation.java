@@ -4,27 +4,27 @@ import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.repo.TrainerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Service
-public class TrainerMapDaoImplementation implements TrainerDao {
-    private final HashMap<Long, Trainer> trainerRepository;
+@Component
+public class TrainerMapDaoImplementation implements Dao<Trainer, Long> {
+    private final HashMap<Long, Trainer>  trainerRepository;
 
     @Autowired
-    public TrainerMapDaoImplementation(TrainerRepository trainerRepository) {
-        this.trainerRepository = trainerRepository.getTrainerRepository();
+    public TrainerMapDaoImplementation(TrainerRepository trainerRepository){
+        this.trainerRepository = trainerRepository.getRepository();
     }
 
     @Override
-    public Optional<Trainer> getById(Long aLong) {
-        return Optional.ofNullable(trainerRepository.get(aLong));
+    public Optional<Trainer> getById(Long id) {
+        return Optional.ofNullable(trainerRepository.get(id));
     }
 
     @Override
     public List<Trainer> getAll() {
-        return trainerRepository.values().stream().toList();
+        return new ArrayList<>(trainerRepository.values());
     }
 
     @Override
@@ -40,15 +40,8 @@ public class TrainerMapDaoImplementation implements TrainerDao {
     }
 
     @Override
-    public void delete(Trainer trainer) {
-        Optional<Long> idOptional = trainerRepository
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().getUserId().equals(trainer.getUserId()))
-                .map(Map.Entry::getKey)
-                .findAny();
-
-        idOptional.ifPresent(trainerRepository::remove);
+    public void delete(Trainer user) {
+        trainerRepository.values().removeIf(existingUser -> existingUser.getUserId().equals(user.getUserId()));
     }
 
     @Override
@@ -70,7 +63,6 @@ public class TrainerMapDaoImplementation implements TrainerDao {
             existingTrainer.setActive(Boolean.parseBoolean(params[4]));
             existingTrainer.setSpecialization(TrainingType.valueOf(params[5]));
 
-            // Put the updated trainer back into the map
             trainerRepository.put(trainer.getUserId(), existingTrainer);
         } else {
         throw new IllegalArgumentException("Trainer not found with ID: " + trainer.getUserId());

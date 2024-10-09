@@ -1,8 +1,8 @@
 package com.gym_app.core.services;
 
-import com.gym_app.core.dao.TrainerDao;
+import com.gym_app.core.dao.TrainerMapDaoImplementation;
 import com.gym_app.core.dto.Trainer;
-import lombok.extern.slf4j.Slf4j; // Import for Lombok's logging
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +12,17 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
-@Slf4j // Lombok annotation for logging
+@Slf4j
 public class TrainerService {
     private static final Logger log = LoggerFactory.getLogger(TrainerService.class);
-    private final TrainerDao trainerDao;
+    private final TrainerMapDaoImplementation trainerDao;
 
     @Autowired
-    public TrainerService(TrainerDao trainerDao) {
+    public TrainerService(TrainerMapDaoImplementation trainerDao) {
         this.trainerDao = trainerDao;
     }
 
-    // Create method with logging
-    public void create(Trainer trainer) {
+    public Trainer create(Trainer trainer) {
         log.info("Creating trainer: {}", trainer); // Log method entry
         if (trainer == null) {
             log.error("Failed to create trainer: Trainer argument is null");
@@ -31,6 +30,7 @@ public class TrainerService {
         }
         Trainer savedTrainer = trainerDao.save(trainer);
         log.info("Trainer created successfully with ID: {}", savedTrainer.getUserId()); // Log success
+        return savedTrainer;
     }
 
     public void update(Trainer trainer, String[] updates) {

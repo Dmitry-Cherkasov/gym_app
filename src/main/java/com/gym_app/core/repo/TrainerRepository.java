@@ -13,7 +13,7 @@ public class TrainerRepository {
         trainerRepository = new HashMap<>();
     }
 
-    public HashMap<Long, Trainer> getTrainerRepository() {
+    public HashMap<Long, Trainer> getRepository() {
         return trainerRepository;
     }
 }

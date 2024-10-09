@@ -1,0 +1,121 @@
+2024-10-09T11:37:13.823+03:00  INFO 31348 --- [main] com.gym_app.core.CoreApplication         : Starting CoreApplication using Java 22.0.2 with PID 31348 (D:\Laba\core\target\classes started by D-mass in D:\Laba\core)
+2024-10-09T11:37:13.824+03:00  INFO 31348 --- [main] com.gym_app.core.CoreApplication         : No active profile set, falling back to 1 default profile: "default"
+2024-10-09T11:37:14.494+03:00  INFO 31348 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-09T11:37:14.520+03:00  INFO 31348 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 16 ms. Found 0 JPA repository interfaces.
+2024-10-09T11:37:14.940+03:00  INFO 31348 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-09T11:37:14.957+03:00  INFO 31348 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-09T11:37:14.957+03:00  INFO 31348 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-09T11:37:15.004+03:00  INFO 31348 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-09T11:37:15.004+03:00  INFO 31348 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1145 ms
+2024-10-09T11:37:15.038+03:00  INFO 31348 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-09T11:37:15.180+03:00  INFO 31348 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=ADMIN
+2024-10-09T11:37:15.180+03:00  INFO 31348 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-09T11:37:15.194+03:00  INFO 31348 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2'. Database available at 'jdbc:h2:mem:testdb'
+2024-10-09T11:37:15.294+03:00  INFO 31348 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-09T11:37:15.358+03:00  INFO 31348 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-09T11:37:15.385+03:00  INFO 31348 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-09T11:37:15.637+03:00  INFO 31348 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-09T11:37:15.677+03:00  WARN 31348 --- [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-09T11:37:15.906+03:00  INFO 31348 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-09T11:37:15.906+03:00  INFO 31348 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, John', Wick', user= John.Wick', password='UXB1OxGkjq'} YOGA'}
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 174
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Alice', Smith', user= Alice.Smith', password='ZnwKBmULE8'} FITNESS'}
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 896
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Bruce', Wayne', user= Bruce.Wayne', password='WfrFHf7Y5E'} RESISTANCE'}
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 833
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Diana', Prince', user= Diana.Prince', password='Oy88jcc4Pi'} STRETCHING'}
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 337
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Clark', Kent', user= Clark.Kent', password='Di6FGYXcJF'} YOGA'}
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 928
+2024-10-09T11:37:15.922+03:00  INFO 31348 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: null
+2024-10-09T11:37:15.922+03:00 ERROR 31348 --- [main] c.gym_app.core.services.TrainerService   : Failed to create trainer: Trainer argument is null
+2024-10-09T11:37:15.927+03:00  WARN 31348 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'testConfiguration': Invocation of init method failed
+2024-10-09T11:37:15.927+03:00  INFO 31348 --- [main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-09T11:37:15.928+03:00  INFO 31348 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-09T11:37:15.930+03:00  INFO 31348 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-09T11:37:15.930+03:00  INFO 31348 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2024-10-09T11:37:15.940+03:00  INFO 31348 --- [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-10-09T11:37:15.953+03:00 ERROR 31348 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'testConfiguration': Invocation of init method failed
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:222) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:422) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1798) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625) ~[spring-context-6.1.13.jar:6.1.13]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.4.jar:3.3.4]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.4.jar:3.3.4]
+	at com.gym_app.core.CoreApplication.main(CoreApplication.java:9) ~[classes/:na]
+Caused by: java.lang.IllegalArgumentException: Trainer argument cannot be null
+	at com.gym_app.core.services.TrainerService.create(TrainerService.java:30) ~[classes/:na]
+	at com.gym_app.core.configuration.TestConfiguration.runTest(TestConfiguration.java:30) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401) ~[spring-beans-6.1.13.jar:6.1.13]
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219) ~[spring-beans-6.1.13.jar:6.1.13]
+	... 18 common frames omitted
+
+2024-10-09T11:38:30.525+03:00  INFO 32320 --- [main] com.gym_app.core.CoreApplication         : Starting CoreApplication using Java 22.0.2 with PID 32320 (D:\Laba\core\target\classes started by D-mass in D:\Laba\core)
+2024-10-09T11:38:30.528+03:00  INFO 32320 --- [main] com.gym_app.core.CoreApplication         : No active profile set, falling back to 1 default profile: "default"
+2024-10-09T11:38:30.992+03:00  INFO 32320 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-09T11:38:31.011+03:00  INFO 32320 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 JPA repository interfaces.
+2024-10-09T11:38:31.396+03:00  INFO 32320 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-10-09T11:38:31.404+03:00  INFO 32320 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-10-09T11:38:31.406+03:00  INFO 32320 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.30]
+2024-10-09T11:38:31.444+03:00  INFO 32320 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-10-09T11:38:31.444+03:00  INFO 32320 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 888 ms
+2024-10-09T11:38:31.463+03:00  INFO 32320 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-09T11:38:31.571+03:00  INFO 32320 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=ADMIN
+2024-10-09T11:38:31.571+03:00  INFO 32320 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-09T11:38:31.587+03:00  INFO 32320 --- [main] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2'. Database available at 'jdbc:h2:mem:testdb'
+2024-10-09T11:38:31.688+03:00  INFO 32320 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-09T11:38:31.732+03:00  INFO 32320 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2024-10-09T11:38:31.761+03:00  INFO 32320 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-09T11:38:31.968+03:00  INFO 32320 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-09T11:38:32.004+03:00  WARN 32320 --- [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-09T11:38:32.215+03:00  INFO 32320 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-09T11:38:32.220+03:00  INFO 32320 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, John', Wick', user= John.Wick', password='8TRoW17wRl'} YOGA'}
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 975
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Alice', Smith', user= Alice.Smith', password='tjBflWgVgB'} FITNESS'}
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 550
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Bruce', Wayne', user= Bruce.Wayne', password='WT56sUEZhG'} RESISTANCE'}
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 872
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Diana', Prince', user= Diana.Prince', password='Uj2vqY1sPx'} STRETCHING'}
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 483
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: Trainer{User{userId=null, Clark', Kent', user= Clark.Kent', password='JQ9ftwfVzw'} YOGA'}
+2024-10-09T11:38:32.236+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Trainer created successfully with ID: 611
+2024-10-09T11:38:32.239+03:00  INFO 32320 --- [main] c.gym_app.core.services.TrainerService   : Creating trainer: null
+2024-10-09T11:38:32.239+03:00 ERROR 32320 --- [main] c.gym_app.core.services.TrainerService   : Failed to create trainer: Trainer argument is null
+2024-10-09T11:38:32.271+03:00  WARN 32320 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-10-09T11:38:32.532+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : Executing SQL script from file [D:\Laba\core\target\classes\schema.sql]
+2024-10-09T11:38:32.555+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE "USER" ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, FIRST_NAME VARCHAR(255) NOT NULL, LAST_NAME VARCHAR(255) NOT NULL, USERNAME VARCHAR(255) NOT NULL, PASSWORD VARCHAR(255) NOT NULL, IS_ACTIVE BOOLEAN NOT NULL )
+2024-10-09T11:38:32.567+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE TRAINEE ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, USER_ID BIGINT NOT NULL, DATE_OF_BIRTH DATE, ADDRESS VARCHAR(255), FOREIGN KEY (USER_ID) REFERENCES "USER" (ID) )
+2024-10-09T11:38:32.567+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE TRAINING_TYPE ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, TRAINING_TYPE_NAME VARCHAR(255) NOT NULL )
+2024-10-09T11:38:32.567+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE TRAINER ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, USER_ID BIGINT NOT NULL, SPECIALIZATION_ID BIGINT NOT NULL, FOREIGN KEY (USER_ID) REFERENCES "USER" (ID), FOREIGN KEY (SPECIALIZATION_ID) REFERENCES TRAINING_TYPE(ID) )
+2024-10-09T11:38:32.570+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE TRAINING ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, TRAINEE_ID BIGINT NOT NULL, TRAINER_ID BIGINT NOT NULL, TRAINING_NAME VARCHAR(255) NOT NULL, TRAINING_TYPE_ID BIGINT NOT NULL, TRAINING_DATE DATE NOT NULL, TRAINING_DURATION INT NOT NULL, FOREIGN KEY (TRAINEE_ID) REFERENCES TRAINEE(ID), FOREIGN KEY (TRAINER_ID) REFERENCES TRAINER(ID), FOREIGN KEY (TRAINING_TYPE_ID) REFERENCES TRAINING_TYPE(ID) )
+2024-10-09T11:38:32.570+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 0 returned as update count for SQL: CREATE TABLE TRAINEE2TRAINER ( ID BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY, TRAINEE_ID BIGINT NOT NULL, TRAINER_ID BIGINT NOT NULL, FOREIGN KEY (TRAINEE_ID) REFERENCES TRAINEE(ID), FOREIGN KEY (TRAINER_ID) REFERENCES TRAINER(ID) )
+2024-10-09T11:38:32.570+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : Executed SQL script from file [D:\Laba\core\target\classes\schema.sql] in 38 ms.
+2024-10-09T11:38:32.570+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : Executing SQL script from file [D:\Laba\core\target\classes\data.sql]
+2024-10-09T11:38:32.578+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : 5 returned as update count for SQL: INSERT INTO TRAINING_TYPE (TRAINING_TYPE_NAME) VALUES ('FITNESS'), ('YOGA'), ('ZUMBA'), ('STRETCHING'), ('RESISTANCE')
+2024-10-09T11:38:32.578+03:00 DEBUG 32320 --- [main] o.s.jdbc.datasource.init.ScriptUtils     : Executed SQL script from file [D:\Laba\core\target\classes\data.sql] in 8 ms.
+2024-10-09T11:38:32.620+03:00  INFO 32320 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2024-10-09T11:38:32.634+03:00  INFO 32320 --- [main] com.gym_app.core.CoreApplication         : Started CoreApplication in 2.465 seconds (process running for 2.748)
+2024-10-09T11:39:49.893+03:00  INFO 32320 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-09T11:39:49.893+03:00  INFO 32320 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-09T11:39:49.893+03:00  INFO 32320 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

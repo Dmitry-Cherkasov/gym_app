@@ -16,9 +16,8 @@ public class TraineeFactory extends UserFactory{
 
 
     public Trainee createTrainee(String firstName, String lastName, Boolean isActive, LocalDate date, String address) {
-        String userName = super.getCreatePolicy().getUserName(firstName, lastName);
-        String password = super.getCreatePolicy().getPassword(10);
-
-        return new Trainee(firstName, lastName, userName, password,isActive, date, address);
+            String userName = super.getCreatePolicy().getUserName(firstName, lastName);
+            String password = super.getCreatePolicy().getPassword(10);
+            return new Trainee(firstName, lastName, userName, password,isActive, date, address);
     }
 }
