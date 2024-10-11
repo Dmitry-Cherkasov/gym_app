@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class Training extends ServiceType {
     private TrainingType trainingType;
 
-    public Training(User trainee , User trainer, String trainingName, TrainingType trainingType, LocalDate trainingDate, int duration) {
-        super(trainee, trainer, trainingName, trainingDate, duration);
+    public Training(long traineeId , long trainerId, String trainingName, TrainingType trainingType, LocalDate trainingDate, int duration) {
+        super(traineeId, trainerId, trainingName, trainingDate, duration);
         this.trainingType = trainingType;
     }
 

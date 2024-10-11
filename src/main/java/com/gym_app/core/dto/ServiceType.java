@@ -4,15 +4,15 @@ import java.time.LocalDate;
 
 public abstract class ServiceType {
     private long serviceId;
-    private User consumer;
-    private User supplier;
+    private long consumerId;
+    private long supplierId;
     String serviceName;
     LocalDate serviceDate;
     int duration;
 
-    public ServiceType(User consumer, User supplier, String serviceName, LocalDate serviceDate, int duration) {
-        this.consumer = consumer;
-        this.supplier = supplier;
+    public ServiceType(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration) {
+        this.consumerId = consumerId;
+        this.supplierId = supplierId;
         this.serviceName = serviceName;
         this.serviceDate = serviceDate;
         this.duration = duration;
@@ -27,20 +27,20 @@ public abstract class ServiceType {
         this.serviceId = serviceId;
     }
 
-    public User getConsumer() {
-        return consumer;
+    public long getConsumerId() {
+        return consumerId;
     }
 
-    public void setConsumer(User consumer) {
-        this.consumer = consumer;
+    public void setConsumer(long consumerId) {
+        this.consumerId = consumerId;
     }
 
-    public User getSupplier() {
-        return supplier;
+    public long getSupplierId() {
+        return supplierId;
     }
 
-    public void setSupplier(User supplier) {
-        this.supplier = supplier;
+    public void setSupplierId(long supplierId) {
+        this.supplierId = supplierId;
     }
 
     public String getServiceName() {
@@ -72,8 +72,8 @@ public abstract class ServiceType {
     public String toString() {
         return "Service{" +
                 "Id=" + serviceId +
-                ", " + consumer +
-                ", " + supplier +
+                ", " + consumerId +
+                ", " + supplierId +
                 ", " + serviceName + '\'' +
                 ", " + serviceDate +
                 ", " + duration +

@@ -25,7 +25,7 @@ public class Tester {
 //        Training training = trainingFactory.createTraining(trainee, trainer, "Sunday training", TrainingType.YOGA, LocalDate.now().plusDays(2), 60);
 //        System.out.println(training);
 //        System.out.println(cp.checkAge(LocalDate.now()));
-
+        System.out.println(LocalDate.parse("2024-10-18"));
     }
 
 }

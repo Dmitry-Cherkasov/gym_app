@@ -1,22 +1,21 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.ServiceType;
 import com.gym_app.core.dto.Training;
-import com.gym_app.core.dto.User;
 import com.gym_app.core.enums.TrainingType;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
-public class TrainingFactory implements ServiceTypeFactory {
+public class TrainingFactory implements ServiceTypeFactory<Training> {
 
     @Override
-    public ServiceType createService(User consumer, User supplier, String serviceName, LocalDate serviceDate, int duration) {
-        return new Training(consumer, supplier, serviceName, null, serviceDate, duration);
+    public Training createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration) {
+        return new Training(consumerId, supplierId, serviceName, null, serviceDate, duration);
     }
 
-    public Training createTraining(User trainee, User trainer, String trainingName, TrainingType trainingType, LocalDate trainingDate, int duration) {
-        return new Training(trainee, trainer, trainingName, trainingType, trainingDate, duration);
+    public Training createTraining(long consumerId, long supplierId, String serviceName, TrainingType trainingType, LocalDate serviceDate, int duration){
+        return new Training(consumerId, supplierId, serviceName, trainingType, serviceDate, duration);
     }
+
 }

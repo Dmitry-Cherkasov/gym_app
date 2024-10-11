@@ -1,11 +1,10 @@
 package com.gym_app.core.util;
 
 import com.gym_app.core.dto.ServiceType;
-import com.gym_app.core.dto.User;
 
 import java.time.LocalDate;
 
-public interface ServiceTypeFactory {
+public interface ServiceTypeFactory <T extends ServiceType> {
 
-    ServiceType createService(User consumer, User supplier, String serviceName, LocalDate serviceDate, int duration);
+    T createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration);
 }
