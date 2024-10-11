@@ -7,13 +7,13 @@ import java.util.HashMap;
 
 @Component
 public class TraineeRepository {
-    private HashMap<Long, Trainee> trainerRepository;
+    private HashMap<String, Trainee> trainerRepository;
 
     public TraineeRepository(){
         trainerRepository = new HashMap<>();
     }
 
-    public HashMap<Long, Trainee> getRepository() {
+    public HashMap<String, Trainee> getRepository() {
         return trainerRepository;
     }
 }

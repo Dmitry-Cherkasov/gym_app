@@ -30,7 +30,7 @@ public class TraineeService {
             throw new IllegalArgumentException("Trainee argument cannot be null");
         }
             Trainee savedTrainee = traineeDao.save(trainee);
-            log.info("Trainee created successfully with ID: {}", savedTrainee.getUserId()); // Log success
+            log.info("Trainee created successfully with user name: {}", savedTrainee.getUserName());
             return savedTrainee;
     }
 
@@ -52,24 +52,24 @@ public class TraineeService {
         }
     }
 
-    public void delete(long traineeId) {
-        log.info("Deleting trainee with ID: {}", traineeId);
-        Optional<Trainee> trainee = traineeDao.getById(traineeId);
+    public void delete(String userName) {
+        log.info("Deleting trainee with UserName: {}", userName);
+        Optional<Trainee> trainee = traineeDao.getById(userName);
         if (trainee.isPresent()) {
             traineeDao.delete(trainee.get());
-            log.info("Trainee deleted successfully with ID: {}", traineeId);
+            log.info("Trainee deleted successfully with UserName: {}", userName);
         } else {
-            log.error("Failed to delete trainee: Trainee with ID {} not found", traineeId);
-            throw new NoSuchElementException("Id is not present in the persistence store");
+            log.error("Failed to delete trainee: Trainee with UserName: {} not found", userName);
+            throw new NoSuchElementException("Trainee is not present in the persistence store");
         }
     }
 
-    public Optional<Trainee> select(long id) {
-        log.info("Selecting trainee with ID: {}", id);
-        Optional<Trainee> trainee = traineeDao.getById(id);
+    public Optional<Trainee> select(String userName) {
+        log.info("Selecting trainee with UserName: {}", userName);
+        Optional<Trainee> trainee = traineeDao.getById(userName);
         if (trainee.isEmpty()) {
-            log.warn("Trainee with ID {} not found", id); // Use warn for not-found cases
-            throw new NoSuchElementException("Id is not present in the persistence store");
+            log.warn("Trainee with UserName: {} not found", userName); // Use warn for not-found cases
+            throw new NoSuchElementException("Trainee is not present in the persistence store");
         }
         log.info("Trainee selected: {}", trainee.get());
         return trainee;

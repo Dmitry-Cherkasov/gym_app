@@ -29,7 +29,7 @@ public class TrainerService {
             throw new IllegalArgumentException("Trainer argument cannot be null");
         }
         Trainer savedTrainer = trainerDao.save(trainer);
-        log.info("Trainer created successfully with ID: {}", savedTrainer.getUserId()); // Log success
+        log.info("Trainer created successfully with ID: {}", savedTrainer.getUserName()); // Log success
         return savedTrainer;
     }
 
@@ -46,23 +46,23 @@ public class TrainerService {
         log.info("Trainer updated successfully: {}", trainer);
     }
 
-    public void delete(long trainerId) {
-        log.info("Deleting trainer with ID: {}", trainerId);
-        Optional<Trainer> trainer = trainerDao.getById(trainerId);
+    public void delete(String userName) {
+        log.info("Deleting trainer with UserName: {}", userName);
+        Optional<Trainer> trainer = trainerDao.getById(userName);
         if (trainer.isPresent()) {
             trainerDao.delete(trainer.get());
-            log.info("Trainer deleted successfully with ID: {}", trainerId);
+            log.info("Trainer deleted successfully with ID: {}", userName);
         } else {
-            log.error("Failed to delete trainer: Trainer with ID {} not found", trainerId);
+            log.error("Failed to delete trainer: Trainer with ID {} not found", userName);
             throw new NoSuchElementException("Id is not present in the persistence store");
         }
     }
 
-    public Optional<Trainer> select(long id) {
-        log.info("Selecting trainer with ID: {}", id);
-        Optional<Trainer> trainer = trainerDao.getById(id);
+    public Optional<Trainer> select(String userName) {
+        log.info("Selecting trainer with ID: {}", userName);
+        Optional<Trainer> trainer = trainerDao.getById(userName);
         if (trainer.isEmpty()) {
-            log.warn("Trainer with ID {} not found", id); // Use warn for not-found cases
+            log.warn("Trainer with ID {} not found", userName); // Use warn for not-found cases
             throw new NoSuchElementException("Id is not present in the persistence store");
         }
         log.info("Trainer selected: {}", trainer.get());

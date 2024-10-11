@@ -10,8 +10,8 @@ import java.util.*;
 
 
 @Component
-public class TraineeMapDaoImplementation implements Dao<Trainee, Long>{
-    private final HashMap<Long, Trainee> traineeRepository;
+public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
+    private final HashMap<String, Trainee> traineeRepository;
 
     @Autowired
     public TraineeMapDaoImplementation(TraineeRepository traineeRepository){
@@ -19,7 +19,7 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, Long>{
     }
 
     @Override
-    public Optional<Trainee> getById(Long id) {
+    public Optional<Trainee> getById(String id) {
         return Optional.ofNullable(traineeRepository.get(id));
     }
 
@@ -29,26 +29,20 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, Long>{
     }
 
     @Override
-    public Trainee save(Trainee trainer) {
-        Random random = new Random();
-        long id = random.nextLong(1000);
-        while (traineeRepository.containsKey(id)) {
-            id = random.nextLong(1000);
-        }
-        trainer.setUserId(id);
-        traineeRepository.put(id, trainer);
-        return trainer;
+    public Trainee save(Trainee trainee) {
+        traineeRepository.put(trainee.getUserName(), trainee);
+        return trainee;
     }
 
     @Override
     public void delete(Trainee user) {
-        traineeRepository.values().removeIf(existingUser -> existingUser.getUserId().equals(user.getUserId()));
+        traineeRepository.values().removeIf(existingUser -> existingUser.getUserName().equals(user.getUserName()));
     }
 
 
     @Override
     public void update(Trainee trainee, String[] params) {
-        Trainee existingTrainee = traineeRepository.get(trainee.getUserId());
+        Trainee existingTrainee = traineeRepository.get(trainee.getUserName());
         if (params.length < 7) {
             throw new IllegalArgumentException("Invalid number of parameters. Expected 7 parameters.");
         }
@@ -67,9 +61,9 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, Long>{
             existingTrainee.setDateOfBirth(changedDate);
             existingTrainee.setAddress(params[6]);
 
-            traineeRepository.put(trainee.getUserId(), existingTrainee);
+            traineeRepository.put(trainee.getUserName(), existingTrainee);
         } else {
-            throw new IllegalArgumentException("Trainee not found with ID: " + trainee.getUserId());
+            throw new IllegalArgumentException("Trainee not found with user name: " + trainee.getUserName());
         }
     }
 }

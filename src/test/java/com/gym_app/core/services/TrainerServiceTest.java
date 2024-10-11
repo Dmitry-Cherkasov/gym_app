@@ -54,7 +54,7 @@ public class TrainerServiceTest {
 
     @Test
     public void testUpdateTrainer() {
-        long idSample = trainers[2].getUserId();
+        String idSample = trainers[2].getUserName();
         String[] updateInfo = new String[]{"Bruce", "Lee", "Bruce.Lee", "kungfupanda", "true", "RESISTANCE"};
         Trainer sampleTrainer = trainerRepository.getRepository().get(idSample);
         String expectedString = "Lee";
@@ -77,7 +77,7 @@ public class TrainerServiceTest {
 
     @Test
     public void testDeleteTrainer() {
-        long idSample = trainers[3].getUserId();
+        String idSample = trainers[3].getUserName();
         trainerService.delete(idSample);
 
         assertThrows(NoSuchElementException.class, () -> trainerService.delete(idSample),
@@ -90,11 +90,11 @@ public class TrainerServiceTest {
 
     @Test
     public void testSelectTrainer() {
-        long idSample = trainers[4].getUserId();
+        String idSample = trainers[4].getUserName();
         Optional<Trainer> selectedTrainer = trainerService.select(idSample);
 
         assertTrue(selectedTrainer.isPresent(), "Trainer with ID " + idSample + " should be present");
 
-        assertThrows(NoSuchElementException.class, () -> trainerService.select(999L), "Selecting a non-existing trainer should throw an exception");
+        assertThrows(NoSuchElementException.class, () -> trainerService.select("something.weird"), "Selecting a non-existing trainer should throw an exception");
     }
 }

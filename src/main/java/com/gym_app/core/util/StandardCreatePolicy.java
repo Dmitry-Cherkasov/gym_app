@@ -1,11 +1,7 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.repo.TraineeRepository;
-import com.gym_app.core.repo.TrainerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 
 @Component
 public class StandardCreatePolicy implements CreatePolicy{

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class TrainerMapDaoImplementation implements Dao<Trainer, Long> {
-    private final HashMap<Long, Trainer>  trainerRepository;
+public class TrainerMapDaoImplementation implements Dao<Trainer, String> {
+    private final HashMap<String, Trainer>  trainerRepository;
 
     @Autowired
     public TrainerMapDaoImplementation(TrainerRepository trainerRepository){
@@ -18,8 +18,8 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, Long> {
     }
 
     @Override
-    public Optional<Trainer> getById(Long id) {
-        return Optional.ofNullable(trainerRepository.get(id));
+    public Optional<Trainer> getById(String userName) {
+        return Optional.ofNullable(trainerRepository.get(userName));
     }
 
     @Override
@@ -29,24 +29,18 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, Long> {
 
     @Override
     public Trainer save(Trainer trainer) {
-        Random random = new Random();
-        long id = random.nextLong(1000);
-        while (trainerRepository.containsKey(id)) {
-            id = random.nextLong(1000);
-        }
-        trainer.setUserId(id);
-        trainerRepository.put(id, trainer);
+        trainerRepository.put(trainer.getUserName(), trainer);
         return trainer;
     }
 
     @Override
     public void delete(Trainer user) {
-        trainerRepository.values().removeIf(existingUser -> existingUser.getUserId().equals(user.getUserId()));
+        trainerRepository.values().removeIf(existingUser -> existingUser.getUserName().equals(user.getUserName()));
     }
 
     @Override
     public void update(Trainer trainer, String[] params) {
-        Trainer existingTrainer = trainerRepository.get(trainer.getUserId());
+        Trainer existingTrainer = trainerRepository.get(trainer.getUserName());
         if (params.length < 6) {
             throw new IllegalArgumentException("Invalid number of parameters. Expected 6 parameters.");
         }
@@ -63,9 +57,9 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, Long> {
             existingTrainer.setActive(Boolean.parseBoolean(params[4]));
             existingTrainer.setSpecialization(TrainingType.valueOf(params[5]));
 
-            trainerRepository.put(trainer.getUserId(), existingTrainer);
+            trainerRepository.put(trainer.getUserName(), existingTrainer);
         } else {
-        throw new IllegalArgumentException("Trainer not found with ID: " + trainer.getUserId());
+        throw new IllegalArgumentException("Trainer not found with UserName: " + trainer.getUserName());
     }
     }
 }
