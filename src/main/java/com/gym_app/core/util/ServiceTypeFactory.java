@@ -4,7 +4,7 @@ import com.gym_app.core.dto.ServiceType;
 
 import java.time.LocalDate;
 
-public interface ServiceTypeFactory <T extends ServiceType> {
+public interface ServiceTypeFactory <T extends ServiceType, Id> {
 
-    T createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg);
+    T createService(Id consumerId, Id supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg);
 }

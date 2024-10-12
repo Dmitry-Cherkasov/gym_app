@@ -4,10 +4,10 @@ import com.gym_app.core.enums.TrainingType;
 
 import java.time.LocalDate;
 
-public class Training extends ServiceType {
+public class Training extends ServiceType<Training, String> {
     private TrainingType trainingType;
 
-    public Training(long traineeId , long trainerId, String trainingName, TrainingType trainingType, LocalDate trainingDate, int duration) {
+    public Training(String traineeId , String trainerId, String trainingName, TrainingType trainingType, LocalDate trainingDate, int duration) {
         super(traineeId, trainerId, trainingName, trainingDate, duration);
         this.trainingType = trainingType;
     }

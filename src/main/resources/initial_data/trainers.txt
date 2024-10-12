@@ -1,0 +1,7 @@
+John,Smith,true,STRENGTH
+Emily,Davis,true,STRETCHING
+Michael,Johnson,true,YOGA
+Sarah,Brown,true,RESISTANCE
+David,Jones,true,ZUMBA
+Sophia,Taylor,true,YOGA
+James,White,true,RESISTANCE

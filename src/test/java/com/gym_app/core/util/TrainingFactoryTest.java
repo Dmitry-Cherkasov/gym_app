@@ -18,11 +18,11 @@ class TrainingFactoryTest {
 
     @Test
     public void testCreateTraining(){
-        Training training = trainingFactory.createService(6L, 6L, "Full Body Fitness", LocalDate.now().plusDays(6), 90, "FITNESS");
+        Training training = trainingFactory.createService("John", "Cutler", "Full Body Fitness", LocalDate.now().plusDays(6), 90, "FITNESS");
         assertInstanceOf(Training.class, training);
         assertInstanceOf(ServiceType.class, training);
 
-        assertThrows(IllegalArgumentException.class, ()->trainingFactory.createService(6L, 6L, "Full Body Fitness", LocalDate.now().plusDays(6), 90, training),
+        assertThrows(IllegalArgumentException.class, ()->trainingFactory.createService("John", "Cutler", "Full Body Fitness", LocalDate.now().plusDays(6), 90, training),
                 "Passing invalid training type argument should throw an exception");
 
     }

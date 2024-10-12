@@ -2,15 +2,15 @@ package com.gym_app.core.dto;
 
 import java.time.LocalDate;
 
-public abstract class ServiceType {
+public abstract class ServiceType<T,Id> {
     private long serviceId;
-    private long consumerId;
-    private long supplierId;
+    private Id consumerId;
+    private Id supplierId;
     String serviceName;
     LocalDate serviceDate;
     int duration;
 
-    public ServiceType(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration) {
+    public ServiceType(Id consumerId, Id supplierId, String serviceName, LocalDate serviceDate, int duration) {
         this.consumerId = consumerId;
         this.supplierId = supplierId;
         this.serviceName = serviceName;
@@ -27,19 +27,19 @@ public abstract class ServiceType {
         this.serviceId = serviceId;
     }
 
-    public long getConsumerId() {
+    public Id getConsumerId() {
         return consumerId;
     }
 
-    public void setConsumer(long consumerId) {
+    public void setConsumer(Id consumerId) {
         this.consumerId = consumerId;
     }
 
-    public long getSupplierId() {
+    public Id getSupplierId() {
         return supplierId;
     }
 
-    public void setSupplierId(long supplierId) {
+    public void setSupplierId(Id supplierId) {
         this.supplierId = supplierId;
     }
 
