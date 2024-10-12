@@ -1,4 +1,4 @@
-John,Smith,true,STRENGTH
+John,Smith,true,RESISTANCE
 Emily,Davis,true,STRETCHING
 Michael,Johnson,true,YOGA
 Sarah,Brown,true,RESISTANCE

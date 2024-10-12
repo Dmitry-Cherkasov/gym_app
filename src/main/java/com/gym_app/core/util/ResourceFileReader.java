@@ -5,9 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class ResourceFileReader {
 
-    public ArrayList<String> readFile(String filePath) throws IOException {
+    public static ArrayList<String> readFile(String filePath) throws IOException {
         ArrayList<String> strings = new ArrayList<>();
 
         // Try-with-resources to ensure the reader is closed after use
