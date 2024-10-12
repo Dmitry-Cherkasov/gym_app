@@ -1,5 +1,7 @@
 package com.gym_app.core.dto;
 
+import java.util.Objects;
+
 public class User extends AbstractUser{
     private String firstName;
     private String lastName;
@@ -65,5 +67,18 @@ public class User extends AbstractUser{
                 ", user= " + userName + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(getFirstName(), user.getFirstName()) && Objects.equals(getLastName(), user.getLastName()) && Objects.equals(getUserName(), user.getUserName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFirstName(), getLastName(), getUserName());
     }
 }

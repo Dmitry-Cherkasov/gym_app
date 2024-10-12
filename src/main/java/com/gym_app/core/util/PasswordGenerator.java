@@ -1,9 +1,8 @@
 package com.gym_app.core.util;
 
 import java.security.SecureRandom;
-import java.util.Random;
 
-public class PasswordCreator {
+public class PasswordGenerator {
     private static final String ORIGIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final SecureRandom RANDOM = new SecureRandom();
 

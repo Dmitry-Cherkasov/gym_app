@@ -10,11 +10,13 @@ import java.time.LocalDate;
 public class TrainingFactory implements ServiceTypeFactory<Training> {
 
     @Override
-    public Training createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration) {
-        return new Training(consumerId, supplierId, serviceName, null, serviceDate, duration);
-    }
-
-    public Training createTraining(long consumerId, long supplierId, String serviceName, TrainingType trainingType, LocalDate serviceDate, int duration){
+    public Training createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg) {
+        TrainingType trainingType = null;
+        try{
+            trainingType = TrainingType.valueOf(extraArg.toString());
+        }catch (IllegalArgumentException exception){
+            throw new IllegalArgumentException("Illegal training type argument" + extraArg);
+        }
         return new Training(consumerId, supplierId, serviceName, trainingType, serviceDate, duration);
     }
 

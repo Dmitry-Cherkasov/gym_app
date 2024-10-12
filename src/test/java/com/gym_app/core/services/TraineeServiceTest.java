@@ -25,7 +25,7 @@ public class TraineeServiceTest {
     private TraineeRepository traineeRepository;
 
     @Autowired
-    TraineeFactory traineeFactory;
+    private TraineeFactory traineeFactory;
 
     private Trainee[] trainees;
 
@@ -35,26 +35,29 @@ public class TraineeServiceTest {
         trainees = new Trainee[7];
         traineeRepository.getRepository().clear();
 
-        trainees[0] = traineeService.create(new Trainee("John", "Wick", "John.Wick", "asasdasdad", true, LocalDate.now().minusYears(20), "Hotel Continental"));
-        trainees[1] = traineeService.create(new Trainee("Alice", "Smith", "Alice.Smith", "password123", false, LocalDate.now().minusYears(21), null));
-        trainees[2] = traineeService.create(new Trainee("Bruce", "Wayne", "Bruce.Wayne", "batman123", true, LocalDate.now().minusYears(22), "Bat-cave"));
-        trainees[3] = traineeService.create(new Trainee("Diana", "Prince", "Diana.Prince", "wonderwoman", true, LocalDate.now().minusYears(23), "Greece"));
-        trainees[4] = traineeService.create(new Trainee("Clark", "Kent", "Clark.Kent", "superman007", true, LocalDate.now().minusYears(24), "Krypton"));
+        trainees[0] = traineeService.create(traineeFactory.createUser("John", "Wick", true, LocalDate.now().minusYears(20), "Hotel Continental"));
+        trainees[1] = traineeService.create(traineeFactory.createUser("Alice", "Smith", false, LocalDate.now().minusYears(21), null));
+        trainees[2] = traineeService.create(traineeFactory.createUser("Bruce", "Wayne", true, LocalDate.now().minusYears(22), "Bat-cave"));
+        trainees[3] = traineeService.create(traineeFactory.createUser("Diana", "Prince", true, LocalDate.now().minusYears(23), "Greece"));
+        trainees[4] = traineeService.create(traineeFactory.createUser("Clark", "Kent", true, LocalDate.now().minusYears(24), "Krypton"));
     }
 
         @Test
         public void testCreateTrainees () {
             assertEquals(5, traineeRepository.getRepository().size(), "Repository size after creation should be 5");
 
-            Trainee additionalTrainee = traineeFactory.createTrainee("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP");
+            Trainee additionalTrainee = traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP");
             traineeService.create(additionalTrainee);
             assertEquals(6, traineeRepository.getRepository().size(), "Repository size after creation should be 6");
 
-            traineeService.create(traineeFactory.createTrainee("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
-            traineeService.create(traineeFactory.createTrainee("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
+            traineeService.create(traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
+            traineeService.create(traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
             assertEquals(8, traineeRepository.getRepository().size(), "Repository size after creation should be 6");
             assertTrue(traineeRepository.getRepository().containsKey("Tony.Stark1"));
             assertTrue(traineeRepository.getRepository().containsKey("Tony.Stark2"));
+            Trainee trainee1 = traineeService.select("Tony.Stark1").get();
+            Trainee trainee2 = traineeService.select("Tony.Stark2").get();
+            assertFalse(trainee1.equals(trainee2));
 
             System.out.println(traineeRepository.getRepository());
             assertThrows(IllegalArgumentException.class, () -> traineeService.create(null), "Creating a null trainee should throw an exception");
@@ -80,6 +83,9 @@ public class TraineeServiceTest {
 
             assertThrows(IllegalArgumentException.class, () -> traineeService.update(sampleTrainee, new String[]{}),
                     "Updating with an empty updates array should throw an exception");
+
+            assertThrows(IllegalArgumentException.class, ()-> traineeService.update(sampleTrainee, new String[5]),
+                    "Updating with invalid parameters number should throw an exception");
         }
 
         @Test

@@ -2,6 +2,8 @@ package com.gym_app.core.dao;
 
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.repo.TraineeRepository;
+import com.gym_app.core.util.PasswordGenerator;
+import com.gym_app.core.util.UserNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,8 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
 
     @Override
     public Trainee save(Trainee trainee) {
+        trainee.setPassword(PasswordGenerator.createPassword(10));
+        trainee.setUserName(UserNameGenerator.generate(trainee.getFirstName(), trainee.getLastName(), traineeRepository));
         traineeRepository.put(trainee.getUserName(), trainee);
         return trainee;
     }
@@ -48,7 +52,7 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
         }
         for(String element: params){
             if(element == null){
-                return;
+                throw new IllegalArgumentException("Invalid parameter with Null value.");
             }
         }
         if (existingTrainee != null ) {

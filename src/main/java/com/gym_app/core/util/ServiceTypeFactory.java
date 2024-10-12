@@ -6,5 +6,5 @@ import java.time.LocalDate;
 
 public interface ServiceTypeFactory <T extends ServiceType> {
 
-    T createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration);
+    T createService(long consumerId, long supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg);
 }

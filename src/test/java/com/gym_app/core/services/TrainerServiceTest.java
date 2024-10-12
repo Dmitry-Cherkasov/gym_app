@@ -4,6 +4,7 @@ import com.gym_app.core.CoreApplication;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.repo.TrainerRepository;
+import com.gym_app.core.util.TrainerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,10 @@ public class TrainerServiceTest {
 
     @Autowired
     private TrainerService trainerService;
-
     @Autowired
     private TrainerRepository trainerRepository;
+    @Autowired
+    private TrainerFactory trainerFactory;
 
     private Trainer[] trainers;
 
@@ -32,11 +34,11 @@ public class TrainerServiceTest {
         trainers = new Trainer[5];
         trainerRepository.getRepository().clear();
 
-        trainers[0] =  trainerService.create(new Trainer("John", "Wick", "John.Wick", "asasdasdad", true, TrainingType.YOGA));
-        trainers[1] =  trainerService.create(new Trainer("Alice", "Smith", "Alice.Smith", "password123", false, TrainingType.FITNESS));
-        trainers[2] =  trainerService.create(new Trainer("Bruce", "Wayne", "Bruce.Wayne", "batman123", true, TrainingType.RESISTANCE));
-        trainers[3] =  trainerService.create(new Trainer("Diana", "Prince", "Diana.Prince", "wonderwoman", true, TrainingType.STRETCHING));
-        trainers[4] =  trainerService.create(new Trainer("Clark", "Kent", "Clark.Kent", "superman007", true, TrainingType.YOGA));
+        trainers[0] = trainerService.create(trainerFactory.createUser("John", "Wick", true, "YOGA"));
+        trainers[1] = trainerService.create(trainerFactory.createUser("Alice", "Smith", false, TrainingType.FITNESS));
+        trainers[2] = trainerService.create(trainerFactory.createUser("Bruce", "Wayne", true,"RESISTANCE"));
+        trainers[3] = trainerService.create(trainerFactory.createUser("Diana", "Prince",  true, "STRETCHING"));
+        trainers[4] = trainerService.create(trainerFactory.createUser("Clark", "Kent", true, "YOGA"));
         System.out.println(Arrays.toString(trainers));
     }
 
@@ -48,6 +50,12 @@ public class TrainerServiceTest {
         Trainer additonalTrainer = new Trainer("John", "Bon Jovy", "John.Bon Jovy", "neworleans1990", false, TrainingType.ZUMBA);
         trainerService.create(additonalTrainer);
         assertEquals(6, trainerRepository.getRepository().size(), "Repository size after creation should be 6");
+
+        trainerService.create(new Trainer("John", "Bon Jovy", null,null,false, TrainingType.ZUMBA));
+        trainerService.create(new Trainer("John", "Bon Jovy", null,null,false, TrainingType.ZUMBA));
+        assertEquals(8, trainerRepository.getRepository().size(), "Repository size after creation should be 8");
+        assertTrue(trainerRepository.getRepository().containsKey("John.Bon Jovy1"));
+        assertTrue(trainerRepository.getRepository().containsKey("John.Bon Jovy2"));
 
         assertThrows(IllegalArgumentException.class, () -> trainerService.create(null), "Creating a null trainer should return false");
     }

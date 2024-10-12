@@ -2,7 +2,6 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.CoreApplication;
 import com.gym_app.core.dto.Training;
-import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.repo.TrainingRepository;
 import com.gym_app.core.util.TrainingFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +27,7 @@ public class TrainingServiceTest {
     @Autowired
     TrainingFactory trainingFactory;
 
+
     private Training[] trainings;
 
     // Prepare trainings before each test
@@ -36,12 +36,12 @@ public class TrainingServiceTest {
         trainings = new Training[6];
         trainingRepository.getRepository().clear();
 
-        trainings[0] = trainingsService.create(trainingFactory.createTraining(1L, 2L, "Sunday Stretching", TrainingType.STRETCHING, LocalDate.now().plusDays(2), 60));
-        trainings[1] = trainingsService.create(trainingFactory.createTraining(2L, 3L, "Morning Yoga", TrainingType.YOGA, LocalDate.now().plusDays(3), 90));
-        trainings[2] = trainingsService.create(trainingFactory.createTraining(3L, 1L, "Resistance Training", TrainingType.RESISTANCE, LocalDate.now().plusDays(4), 75));
-        trainings[3] = trainingsService.create(trainingFactory.createTraining(4L, 5L, "Evening Zumba", TrainingType.ZUMBA, LocalDate.now().plusDays(1), 50));
-        trainings[4] = trainingsService.create(trainingFactory.createTraining(5L, 4L, "Power Lifting", TrainingType.RESISTANCE, LocalDate.now().plusDays(5), 120));
-        trainings[5] = trainingsService.create(trainingFactory.createTraining(6L, 6L, "Full Body Fitness", TrainingType.FITNESS, LocalDate.now().plusDays(6), 90));
+        trainings[0] = trainingsService.create(trainingFactory.createService(1L, 2L, "Sunday Stretching", LocalDate.now().plusDays(2), 60, "STRETCHING"));
+        trainings[1] = trainingsService.create(trainingFactory.createService(2L, 3L, "Morning Yoga", LocalDate.now().plusDays(3), 90, "YOGA"));
+        trainings[2] = trainingsService.create(trainingFactory.createService(3L, 1L, "Resistance Training",  LocalDate.now().plusDays(4), 75, "RESISTANCE"));
+        trainings[3] = trainingsService.create(trainingFactory.createService(4L, 5L, "Evening Zumba", LocalDate.now().plusDays(1), 50, "ZUMBA"));
+        trainings[4] = trainingsService.create(trainingFactory.createService(5L, 4L, "Power Lifting", LocalDate.now().plusDays(5), 120, "RESISTANCE"));
+        trainings[5] = trainingsService.create(trainingFactory.createService(6L, 6L, "Full Body Fitness", LocalDate.now().plusDays(6), 90, "FITNESS"));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class TrainingServiceTest {
         int expectedSize = 6;
         assertEquals(expectedSize, trainingRepository.getRepository().size(), "Repository size after creation should be " + expectedSize);
 
-        Training additionalTraining = trainingFactory.createTraining(7L, 2L, "Cardio Blast", TrainingType.FITNESS, LocalDate.now().plusDays(7), 45);
+        Training additionalTraining = trainingFactory.createService(7L, 2L, "Cardio Blast", LocalDate.now().plusDays(7), 45, "FITNESS");
         trainingsService.create(additionalTraining);
         assertEquals(++expectedSize, trainingRepository.getRepository().size(), "Repository size after creation should be" + (expectedSize+1));
 

@@ -37,16 +37,4 @@ public class Trainee extends User{
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Trainee trainee = (Trainee) o;
-        return Objects.equals(getDateOfBirth(), trainee.getDateOfBirth()) && Objects.equals(getAddress(), trainee.getAddress());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getDateOfBirth(), getAddress());
-    }
 }

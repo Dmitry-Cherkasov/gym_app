@@ -3,6 +3,8 @@ package com.gym_app.core.dao;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.repo.TrainerRepository;
+import com.gym_app.core.util.PasswordGenerator;
+import com.gym_app.core.util.UserNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,8 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, String> {
 
     @Override
     public Trainer save(Trainer trainer) {
+        trainer.setPassword(PasswordGenerator.createPassword(10));
+        trainer.setUserName(UserNameGenerator.generate(trainer.getFirstName(), trainer.getLastName(), trainerRepository));
         trainerRepository.put(trainer.getUserName(), trainer);
         return trainer;
     }
