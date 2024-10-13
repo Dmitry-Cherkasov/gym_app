@@ -57,9 +57,8 @@ public class TraineeServiceTest {
             assertTrue(traineeRepository.getRepository().containsKey("Tony.Stark2"));
             Trainee trainee1 = traineeService.select("Tony.Stark1").get();
             Trainee trainee2 = traineeService.select("Tony.Stark2").get();
-            assertFalse(trainee1.equals(trainee2));
+            assertNotEquals(trainee1, trainee2);
 
-            System.out.println(traineeRepository.getRepository());
             assertThrows(IllegalArgumentException.class, () -> traineeService.create(null), "Creating a null trainee should throw an exception");
         }
 

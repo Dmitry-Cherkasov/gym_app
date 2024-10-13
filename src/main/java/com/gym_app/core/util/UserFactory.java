@@ -5,6 +5,6 @@ import com.gym_app.core.dto.User;
 public interface UserFactory <T extends User> {
 
 
-    public T createUser(String firstName, String lastName, boolean isActive, Object... extraArg);
+    T createUser(String firstName, String lastName, boolean isActive, Object... extraArg);
 
 }

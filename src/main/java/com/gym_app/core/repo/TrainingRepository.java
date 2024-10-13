@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 @Component
 public class TrainingRepository {
-    private HashMap<Long, Training> trainingRepository;
+    private final HashMap<Long, Training> trainingRepository;
 
     public TrainingRepository(){
         trainingRepository = new HashMap<>();
