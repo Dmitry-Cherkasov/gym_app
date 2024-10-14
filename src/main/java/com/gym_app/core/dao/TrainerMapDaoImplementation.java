@@ -59,7 +59,7 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, String> {
             existingTrainer.setUserName(params[2]);
             existingTrainer.setPassword(params[3]);
             existingTrainer.setActive(Boolean.parseBoolean(params[4]));
-            existingTrainer.setSpecialization(TrainingType.valueOf(params[5]));
+            existingTrainer.setSpecialization(TrainingType.valueOf(params[5].toUpperCase()));
 
             trainerRepository.put(trainer.getUserName(), existingTrainer);
         } else {

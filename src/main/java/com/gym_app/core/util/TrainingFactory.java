@@ -11,9 +11,9 @@ public class TrainingFactory implements ServiceTypeFactory<Training, String> {
 
     @Override
     public Training createService(String consumerId, String supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg) {
-        TrainingType trainingType = null;
+        TrainingType trainingType;
         try{
-            trainingType = TrainingType.valueOf(extraArg.toString());
+            trainingType = TrainingType.valueOf(extraArg.toString().toUpperCase());
         }catch (IllegalArgumentException exception){
             throw new IllegalArgumentException("Illegal training type argument" + extraArg);
         }

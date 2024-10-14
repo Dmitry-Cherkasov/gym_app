@@ -62,7 +62,7 @@ public class TrainingMapDaoImplementation implements Dao<Training, Long>{
             existingTraining.setConsumer(params[0]);
             existingTraining.setSupplierId(params[1]);
             existingTraining.setServiceName(params[2]);
-            existingTraining.setTrainingType(TrainingType.valueOf(params[3]));
+            existingTraining.setTrainingType(TrainingType.valueOf(params[3].toUpperCase()));
             existingTraining.setServiceDate(LocalDate.parse(params[4]));
             existingTraining.setDuration(Integer.parseInt(params[5]));
 
