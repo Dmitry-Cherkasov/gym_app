@@ -27,8 +27,12 @@ public class LoggingAspect {
     @AfterReturning(pointcut = "execution(* com.gym_app.core.services.*.*(..))", returning = "result")
     public void logMethodExit(JoinPoint joinPoint, Object result) {
         String methodName = joinPoint.getSignature().getName();
+        String resultString = null;
         String regex = "(?<=password=)[^}]+(?=})";
-        log.info("Exiting method: {} with result: {}", methodName, result.toString().replaceAll(regex, "*****"));
+        if(result != null){
+            resultString = result.toString().replaceAll(regex, "*****");
+        }
+        log.info("Exiting method: {} with result: {}", methodName, resultString);
     }
 
     // Log exceptions thrown by any method in services
