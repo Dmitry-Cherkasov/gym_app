@@ -12,44 +12,48 @@ import java.util.*;
 
 @Component
 public class TrainingMapDaoImplementation implements Dao<Training, Long>{
-    private final HashMap<Long, Training> trainingRepository;
+    private final TrainingRepository trainingRepository;
 
     @Autowired
     public TrainingMapDaoImplementation(TrainingRepository trainingRepository){
-        this.trainingRepository = trainingRepository.getRepository();
+        this.trainingRepository = trainingRepository;
+    }
+
+    private HashMap<Long, Training> getTrainingMap() {
+        return this.trainingRepository.getRepository();
     }
 
     @Override
     public Optional<Training> getById(Long id) {
-        return Optional.ofNullable(trainingRepository.get(id));
+        return Optional.ofNullable(getTrainingMap() .get(id));
     }
 
     @Override
     public List<Training> getAll() {
-        return new ArrayList<>(trainingRepository.values());
+        return new ArrayList<>(getTrainingMap() .values());
     }
 
     @Override
     public Training save(Training training) {
         Random random = new Random();
         long id = random.nextLong(1000);
-        while (trainingRepository.containsKey(id)) {
+        while (getTrainingMap() .containsKey(id)) {
             id = random.nextLong(1000);
         }
         training.setServiceId(id);
-        trainingRepository.put(id, training);
+        getTrainingMap() .put(id, training);
         return training;
     }
 
     @Override
     public void delete(Training training) {
-        trainingRepository.values().removeIf(existingTraining -> existingTraining.getServiceId() == (training.getServiceId()));
+        getTrainingMap().values().removeIf(existingTraining -> existingTraining.getServiceId() == (training.getServiceId()));
     }
 
 
     @Override
     public void update(Training training, String[] params) {
-        Training existingTraining = trainingRepository.get(training.getServiceId());
+        Training existingTraining = getTrainingMap() .get(training.getServiceId());
         if (params.length < 6) {
             throw new IllegalArgumentException("Invalid number of parameters. Expected 6 parameters.");
         }
@@ -66,7 +70,7 @@ public class TrainingMapDaoImplementation implements Dao<Training, Long>{
             existingTraining.setServiceDate(LocalDate.parse(params[4]));
             existingTraining.setDuration(Integer.parseInt(params[5]));
 
-            trainingRepository.put(training.getServiceId(), existingTraining);
+            getTrainingMap() .put(training.getServiceId(), existingTraining);
         } else {
             throw new IllegalArgumentException("Training not found with ID: " + training.getServiceId());
         }
