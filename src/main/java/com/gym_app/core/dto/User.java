@@ -2,7 +2,7 @@ package com.gym_app.core.dto;
 
 import java.util.Objects;
 
-public class User extends AbstractUser{
+public class User {
     private String firstName;
     private String lastName;
     private String userName;
