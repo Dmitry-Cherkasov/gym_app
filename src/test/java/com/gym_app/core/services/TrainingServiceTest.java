@@ -34,7 +34,7 @@ public class TrainingServiceTest {
     @BeforeEach
     public void setup() {
         trainings = new Training[6];
-        trainingRepository.getRepository().clear();
+        trainingRepository.clear();
 
         trainings[0] = trainingsService.create(trainingFactory.createService("Alpha", "Delta", "Sunday Stretching", LocalDate.now().plusDays(2), 60, "STRETCHING"));
         trainings[1] = trainingsService.create(trainingFactory.createService("Beta", "Omega", "Morning Yoga", LocalDate.now().plusDays(3), 90, "YOGA"));
@@ -47,11 +47,11 @@ public class TrainingServiceTest {
     @Test
     public void testCreateTrainings() {
         int expectedSize = 6;
-        assertEquals(expectedSize, trainingRepository.getRepository().size(), "Repository size after creation should be " + expectedSize);
+        assertEquals(expectedSize, trainingRepository.size(), "Repository size after creation should be " + expectedSize);
 
         Training additionalTraining = trainingFactory.createService("Kappa", "Ultima", "Cardio Blast", LocalDate.now().plusDays(7), 45, "FITNESS");
         trainingsService.create(additionalTraining);
-        assertEquals(++expectedSize, trainingRepository.getRepository().size(), "Repository size after creation should be" + (expectedSize+1));
+        assertEquals(++expectedSize, trainingRepository.size(), "Repository size after creation should be" + (expectedSize+1));
 
         assertThrows(IllegalArgumentException.class, () -> trainingsService.create(null), "Creating a null training should throw an exception");
     }
@@ -63,7 +63,7 @@ public class TrainingServiceTest {
 
         String[] updateInfo = new String[]{"Alpha", "Epsilon", expectedString, "YOGA", "2024-10-18", "50"};
 
-        Training sampleTraining = trainingRepository.getRepository().get(idSample);
+        Training sampleTraining = trainingRepository.get(idSample);
 
 
         trainingsService.update(sampleTraining, updateInfo);
@@ -90,7 +90,7 @@ public class TrainingServiceTest {
         assertThrows(NoSuchElementException.class, () -> trainingsService.delete(idSample),
                 "Deleting a non-existing training should throw NoSuchElementException");
 
-        assertEquals(expectedSize, trainingRepository.getRepository().size(),
+        assertEquals(expectedSize, trainingRepository.size(),
                 "Repository size after deletion should be 4");
     }
 

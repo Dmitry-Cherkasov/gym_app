@@ -33,7 +33,7 @@ public class TraineeServiceTest {
     @BeforeEach
     public void setup() {
         trainees = new Trainee[7];
-        traineeRepository.getRepository().clear();
+        traineeRepository.clear();
 
         trainees[0] = traineeService.create(traineeFactory.createUser("John", "Wick", true, LocalDate.now().minusYears(20), "Hotel Continental"));
         trainees[1] = traineeService.create(traineeFactory.createUser("Alice", "Smith", false, LocalDate.now().minusYears(21), null));
@@ -44,17 +44,17 @@ public class TraineeServiceTest {
 
         @Test
         public void testCreateTrainees () {
-            assertEquals(5, traineeRepository.getRepository().size(), "Repository size after creation should be 5");
+            assertEquals(5, traineeRepository.size(), "Repository size after creation should be 5");
 
             Trainee additionalTrainee = traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP");
             traineeService.create(additionalTrainee);
-            assertEquals(6, traineeRepository.getRepository().size(), "Repository size after creation should be 6");
+            assertEquals(6, traineeRepository.size(), "Repository size after creation should be 6");
 
             traineeService.create(traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
             traineeService.create(traineeFactory.createUser("Tony", "Stark", true, LocalDate.now().minusYears(50), "RIP"));
-            assertEquals(8, traineeRepository.getRepository().size(), "Repository size after creation should be 6");
-            assertTrue(traineeRepository.getRepository().containsKey("Tony.Stark1"));
-            assertTrue(traineeRepository.getRepository().containsKey("Tony.Stark2"));
+            assertEquals(8, traineeRepository.size(), "Repository size after creation should be 6");
+            assertTrue(traineeRepository.containsKey("Tony.Stark1"));
+            assertTrue(traineeRepository.containsKey("Tony.Stark2"));
             Trainee trainee1 = traineeService.select("Tony.Stark1").get();
             Trainee trainee2 = traineeService.select("Tony.Stark2").get();
             assertNotEquals(trainee1, trainee2);
@@ -66,7 +66,7 @@ public class TraineeServiceTest {
         public void testUpdateTrainee () {
             String idSample = trainees[2].getUserName();
             String[] updateInfo = new String[]{"Bruce", "Lee", "Bruce.Lee", "ipmansson1970", "false", "1940-11-27", "New York"};
-            Trainee sampleTrainee = traineeRepository.getRepository().get(idSample);
+            Trainee sampleTrainee = traineeRepository.get(idSample);
             String expectedString = "Lee";
 
             traineeService.update(sampleTrainee, updateInfo);
@@ -95,7 +95,7 @@ public class TraineeServiceTest {
             assertThrows(NoSuchElementException.class, () -> traineeService.delete(idSample),
                     "Deleting a non-existing trainee should throw NoSuchElementException");
 
-            assertEquals(4, traineeRepository.getRepository().size(),
+            assertEquals(4, traineeRepository.size(),
                     "Repository size after deletion should be 4");
         }
 

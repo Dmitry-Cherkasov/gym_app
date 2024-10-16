@@ -3,7 +3,6 @@ package com.gym_app.core.dao;
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.repo.TraineeRepository;
 import com.gym_app.core.util.PasswordGenerator;
-import com.gym_app.core.util.UserNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,38 +18,35 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
     public TraineeMapDaoImplementation(TraineeRepository traineeRepository){
         this.traineeRepository = traineeRepository;
     }
-
-    private HashMap<String, Trainee> getTraineeMap() {
-        return this.traineeRepository.getRepository();  // Access the map through the repository
-    }
+    
 
     @Override
     public Optional<Trainee> getById(String id) {
-        return Optional.ofNullable(getTraineeMap().get(id));
+        return Optional.ofNullable(traineeRepository.get(id));
     }
 
     @Override
     public List<Trainee> getAll() {
-        return new ArrayList<>(getTraineeMap().values());
+        return new ArrayList<>(traineeRepository.values());
     }
 
     @Override
     public Trainee save(Trainee trainee) {
         trainee.setPassword(PasswordGenerator.createPassword(10));
-        trainee.setUserName(UserNameGenerator.generate(trainee.getFirstName(), trainee.getLastName(), getTraineeMap()));
-        getTraineeMap().put(trainee.getUserName(), trainee);
+        trainee.setUserName(generate(trainee.getFirstName(), trainee.getLastName()));
+        traineeRepository.put(trainee.getUserName(), trainee);
         return trainee;
     }
 
     @Override
     public void delete(Trainee user) {
-        getTraineeMap().values().removeIf(existingUser -> existingUser.getUserName().equals(user.getUserName()));
+        traineeRepository.values().removeIf(existingUser -> existingUser.getUserName().equals(user.getUserName()));
     }
 
 
     @Override
     public void update(Trainee trainee, String[] params) {
-        Trainee existingTrainee = getTraineeMap().get(trainee.getUserName());
+        Trainee existingTrainee = traineeRepository.get(trainee.getUserName());
         if (params.length < 7) {
             throw new IllegalArgumentException("Invalid number of parameters. Expected 7 parameters.");
         }
@@ -69,9 +65,21 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
             existingTrainee.setDateOfBirth(changedDate);
             existingTrainee.setAddress(params[6]);
 
-            getTraineeMap().put(trainee.getUserName(), existingTrainee);
+            traineeRepository.put(trainee.getUserName(), existingTrainee);
         } else {
             throw new IllegalArgumentException("Trainee not found with user name: " + trainee.getUserName());
         }
+    }
+
+    private String generate(String firstName, String lastName){
+        String baseUserName = firstName + "." + lastName;
+        String userName = baseUserName;
+        int serialNumber = 1;
+
+        while (traineeRepository.containsKey(userName)) {
+            userName = baseUserName + serialNumber;
+            serialNumber++;
+        }
+        return userName;
     }
 }
