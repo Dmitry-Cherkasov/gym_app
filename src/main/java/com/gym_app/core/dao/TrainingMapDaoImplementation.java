@@ -37,20 +37,20 @@ public class TrainingMapDaoImplementation implements Dao<Training, Long>{
         while (trainingRepository .containsKey(id)) {
             id = random.nextLong(1000);
         }
-        training.setServiceId(id);
-        trainingRepository .put(id, training);
+        training.setTrainingId(id);
+        trainingRepository.put(id, training);
         return training;
     }
 
     @Override
     public void delete(Training training) {
-        trainingRepository.values().removeIf(existingTraining -> existingTraining.getServiceId() == (training.getServiceId()));
+        trainingRepository.values().removeIf(existingTraining -> existingTraining.getTrainingId() == (training.getTrainingId()));
     }
 
 
     @Override
     public void update(Training training, String[] params) {
-        Training existingTraining = trainingRepository .get(training.getServiceId());
+        Training existingTraining = trainingRepository .get(training.getTrainingId());
         if (params.length < 6) {
             throw new IllegalArgumentException("Invalid number of parameters. Expected 6 parameters.");
         }
@@ -60,16 +60,16 @@ public class TrainingMapDaoImplementation implements Dao<Training, Long>{
             }
         }
         if (existingTraining != null ) {
-            existingTraining.setConsumer(params[0]);
-            existingTraining.setSupplierId(params[1]);
-            existingTraining.setServiceName(params[2]);
+            existingTraining.setTraineeId(Long.parseLong(params[0]));
+            existingTraining.setTrainerId(Long.parseLong(params[1]));
+            existingTraining.setTrainingName(params[2]);
             existingTraining.setTrainingType(TrainingType.valueOf(params[3].toUpperCase()));
-            existingTraining.setServiceDate(LocalDate.parse(params[4]));
+            existingTraining.setTrainingDate(LocalDate.parse(params[4]));
             existingTraining.setDuration(Integer.parseInt(params[5]));
 
-            trainingRepository .put(training.getServiceId(), existingTraining);
+            trainingRepository .put(training.getTrainingId(), existingTraining);
         } else {
-            throw new IllegalArgumentException("Training not found with ID: " + training.getServiceId());
+            throw new IllegalArgumentException("Training not found with ID: " + training.getTrainingId());
         }
     }
 }

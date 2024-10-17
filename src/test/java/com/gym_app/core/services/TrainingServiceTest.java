@@ -36,12 +36,12 @@ public class TrainingServiceTest {
         trainings = new Training[6];
         trainingRepository.clear();
 
-        trainings[0] = trainingsService.create(trainingFactory.createService("Alpha", "Delta", "Sunday Stretching", LocalDate.now().plusDays(2), 60, "STRETCHING"));
-        trainings[1] = trainingsService.create(trainingFactory.createService("Beta", "Omega", "Morning Yoga", LocalDate.now().plusDays(3), 90, "YOGA"));
-        trainings[2] = trainingsService.create(trainingFactory.createService("Alpha", "Omega", "Resistance Training",  LocalDate.now().plusDays(4), 75, "RESISTANCE"));
-        trainings[3] = trainingsService.create(trainingFactory.createService("Ro", "Epsilon", "Evening Zumba", LocalDate.now().plusDays(1), 50, "ZUMBA"));
-        trainings[4] = trainingsService.create(trainingFactory.createService("Kappa", "Delta", "Power Lifting", LocalDate.now().plusDays(5), 120, "RESISTANCE"));
-        trainings[5] = trainingsService.create(trainingFactory.createService("Lambda", "Epsilon", "Full Body Fitness", LocalDate.now().plusDays(6), 90, "FITNESS"));
+        trainings[0] = trainingsService.create(trainingFactory.createService(1L, 14L, "Sunday Stretching", LocalDate.now().plusDays(2), 60, "STRETCHING"));
+        trainings[1] = trainingsService.create(trainingFactory.createService(2L, 27L, "Morning Yoga", LocalDate.now().plusDays(3), 90, "YOGA"));
+        trainings[2] = trainingsService.create(trainingFactory.createService(1L, 27L, "Resistance Training",  LocalDate.now().plusDays(4), 75, "RESISTANCE"));
+        trainings[3] = trainingsService.create(trainingFactory.createService(12L, 10L, "Evening Zumba", LocalDate.now().plusDays(1), 50, "ZUMBA"));
+        trainings[4] = trainingsService.create(trainingFactory.createService(6L, 14L, "Power Lifting", LocalDate.now().plusDays(5), 120, "RESISTANCE"));
+        trainings[5] = trainingsService.create(trainingFactory.createService(21L, 10L, "Full Body Fitness", LocalDate.now().plusDays(6), 90, "FITNESS"));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class TrainingServiceTest {
         int expectedSize = 6;
         assertEquals(expectedSize, trainingRepository.size(), "Repository size after creation should be " + expectedSize);
 
-        Training additionalTraining = trainingFactory.createService("Kappa", "Ultima", "Cardio Blast", LocalDate.now().plusDays(7), 45, "FITNESS");
+        Training additionalTraining = trainingFactory.createService(6L, 14L, "Cardio Blast", LocalDate.now().plusDays(7), 45, "FITNESS");
         trainingsService.create(additionalTraining);
         assertEquals(++expectedSize, trainingRepository.size(), "Repository size after creation should be" + (expectedSize+1));
 
@@ -58,17 +58,17 @@ public class TrainingServiceTest {
 
     @Test
     public void testUpdateTraining() {
-        long idSample = trainings[2].getServiceId();
+        long idSample = trainings[2].getTrainingId();
         String expectedString = "Power Yoga";
 
-        String[] updateInfo = new String[]{"Alpha", "Epsilon", expectedString, "YOGA", "2024-10-18", "50"};
+        String[] updateInfo = new String[]{"1", "10", expectedString, "YOGA", "2024-10-18", "50"};
 
         Training sampleTraining = trainingRepository.get(idSample);
 
 
         trainingsService.update(sampleTraining, updateInfo);
 
-        assertEquals(expectedString, trainingsService.select(idSample).get().getServiceName(),
+        assertEquals(expectedString, trainingsService.select(idSample).get().getTrainingName(),
                 "Training name should be " + expectedString);
 
         assertThrows(IllegalArgumentException.class, () -> trainingsService.update(null, updateInfo),
@@ -83,7 +83,7 @@ public class TrainingServiceTest {
 
     @Test
     public void testDeleteTraining() {
-        long idSample = trainings[3].getServiceId();
+        long idSample = trainings[3].getTrainingId();
         int expectedSize = 5;
         trainingsService.delete(idSample);
 
@@ -96,7 +96,7 @@ public class TrainingServiceTest {
 
     @Test
     public void testSelectTraining() {
-        long idSample = trainings[4].getServiceId();
+        long idSample = trainings[4].getTrainingId();
         Optional<Training> selectedTraining = trainingsService.select(idSample);
 
         assertTrue(selectedTraining.isPresent(), "Training with ID " + idSample + " should be present");

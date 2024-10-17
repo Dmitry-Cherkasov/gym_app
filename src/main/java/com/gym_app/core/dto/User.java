@@ -1,14 +1,29 @@
 package com.gym_app.core.dto;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table (name = "\"USER\"")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "USER_ID")
+    private long id;
+    @Column(name = "FIRST_NAME", length=50, nullable=false)
     private String firstName;
+    @Column(name = "LAST_NAME", length=50, nullable=false)
     private String lastName;
+    @Column(name = "USER_NAME", length=101, nullable=false, unique=true)
     private String userName;
+    @Column(name = "PASSWORD", length=10, nullable=false)
     private String password;
+    @Column(name = "IS_ACTIVE", nullable=false)
     private boolean isActive;
 
+    public User(){}
 
     public User(String firstName, String lastName, String userName, String password, boolean isActive) {
         this.firstName = firstName;
@@ -18,6 +33,13 @@ public class User {
         this.isActive = isActive;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;

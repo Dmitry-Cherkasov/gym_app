@@ -45,7 +45,7 @@ public class StartupConfiguration {
     public void init() {
         addTrainees();
         addTrainers();
-        addTrainings();
+//        addTrainings();
     }
 
     public void addTrainers() {
@@ -83,7 +83,7 @@ public class StartupConfiguration {
             trainingsData = ResourceFileReader.readFile(trainingsFilePath);
             for (String entry : trainingsData) {
                 String[] args = entry.split(",");
-                Training training = trainingFactory.createService(args[0], args[1], args[2], LocalDate.parse(args[3]), Integer.parseInt(args[4]), TrainingType.valueOf(args[5]));
+                Training training = trainingFactory.createService(Long.parseLong(args[0]), Long.parseLong(args[1]), args[2], LocalDate.parse(args[3]), Integer.parseInt(args[4]), TrainingType.valueOf(args[5]));
                 trainingService.create(training);
             }
         } catch (IOException e) {

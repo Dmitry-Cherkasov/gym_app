@@ -1,14 +1,30 @@
 package com.gym_app.core.dto;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
+@MappedSuperclass
 public abstract class ServiceType<T,Id> {
+    @jakarta.persistence.Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long serviceId;
+
+    @OneToOne(mappedBy="TRAINEE_ID")
+    @Column(name = "TRAINEE_ID")
     private Id consumerId;
+    @OneToOne(mappedBy="TRAINER_ID")
+    @Column(name = "TRAINEE_ID")
     private Id supplierId;
+    @Column (name = "TRAINING_NAME")
     String serviceName;
+    @Column (name = "TRAINING_DATE")
+    @Temporal(TemporalType.DATE)
     LocalDate serviceDate;
+    @Column (name = "DURATION")
     int duration;
+
+    public ServiceType(){}
 
     public ServiceType(Id consumerId, Id supplierId, String serviceName, LocalDate serviceDate, int duration) {
         this.consumerId = consumerId;

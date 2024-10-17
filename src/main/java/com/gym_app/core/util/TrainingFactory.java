@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 @Component
-public class TrainingFactory implements ServiceTypeFactory<Training, String> {
+public class TrainingFactory implements ServiceTypeFactory<Training, Long> {
 
     @Override
-    public Training createService(String consumerId, String supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg) {
+    public Training createService(Long consumerId, Long supplierId, String serviceName, LocalDate serviceDate, int duration, Object extraArg) {
         TrainingType trainingType;
         try{
             trainingType = TrainingType.valueOf(extraArg.toString().toUpperCase());
