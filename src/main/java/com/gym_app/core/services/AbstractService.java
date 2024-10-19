@@ -16,14 +16,7 @@ public abstract class AbstractService<T, Id> {
         return getDao().save(entity);
     }
 
-    public void update(T entity, String[] updates) {
-        if (updates == null || updates.length == 0) {
-            throw new IllegalArgumentException("Update array cannot be null or empty");
-        } else if (entity == null) {
-            throw new IllegalArgumentException("Entity argument cannot be null");
-        }
-        getDao().update(entity, updates);
-    }
+    public abstract void update(T oldentity, String[] updates);
 
     public void delete(Id id) {
         Optional<T> entity = getDao().getById(id);

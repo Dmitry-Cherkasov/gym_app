@@ -1,12 +1,12 @@
 package com.gym_app.core.dao;
 
+
 import com.gym_app.core.dto.Training;
-import com.gym_app.core.enums.TrainingType;
+
 import com.gym_app.core.repo.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.*;
 
 
@@ -49,27 +49,15 @@ public class TrainingMapDaoImplementation implements Dao<Training, Long>{
 
 
     @Override
-    public void update(Training training, String[] params) {
+    public void update(Training training, Training updatedtraining) {
         Training existingTraining = trainingRepository .get(training.getTrainingId());
-        if (params.length < 6) {
-            throw new IllegalArgumentException("Invalid number of parameters. Expected 6 parameters.");
+        if (updatedtraining == null) {
+            throw new IllegalArgumentException("Invalid parameter with Null value.");
         }
-        for(String element: params){
-            if(element == null){
-                return;
-            }
-        }
-        if (existingTraining != null ) {
-            existingTraining.setTraineeId(Long.parseLong(params[0]));
-            existingTraining.setTrainerId(Long.parseLong(params[1]));
-            existingTraining.setTrainingName(params[2]);
-            existingTraining.setTrainingType(TrainingType.valueOf(params[3].toUpperCase()));
-            existingTraining.setTrainingDate(LocalDate.parse(params[4]));
-            existingTraining.setDuration(Integer.parseInt(params[5]));
-
-            trainingRepository .put(training.getTrainingId(), existingTraining);
+        if (existingTraining != null) {
+            trainingRepository.put(training.getTrainingId(), updatedtraining);
         } else {
-            throw new IllegalArgumentException("Training not found with ID: " + training.getTrainingId());
+            throw new IllegalArgumentException("Trainer not found with user name: " + training.getTrainingId());
         }
     }
 }

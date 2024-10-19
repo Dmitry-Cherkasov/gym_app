@@ -1,7 +1,6 @@
 package com.gym_app.core.dao;
 
 import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.repo.TrainerRepository;
 import com.gym_app.core.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,28 +42,17 @@ public class TrainerMapDaoImplementation implements Dao<Trainer, String> {
     }
 
     @Override
-    public void update(Trainer trainer, String[] params) {
+    public void update(Trainer trainer, Trainer updatedTrainee) {
         Trainer existingTrainer = trainerRepository.get(trainer.getUserName());
-        if (params.length < 6) {
-            throw new IllegalArgumentException("Invalid number of parameters. Expected 6 parameters.");
-        }
-        for(String element: params){
-            if(element == null){
-                return;
-            }
-        }
-        if (existingTrainer != null ) {
-            existingTrainer.setFirstName(params[0]);
-            existingTrainer.setLastName(params[1]);
-            existingTrainer.setUserName(params[2]);
-            existingTrainer.setPassword(params[3]);
-            existingTrainer.setActive(Boolean.parseBoolean(params[4]));
-            existingTrainer.setSpecialization(TrainingType.valueOf(params[5].toUpperCase()));
 
-            trainerRepository.put(trainer.getUserName(), existingTrainer);
+        if (updatedTrainee == null) {
+            throw new RuntimeException("Invalid parameter with Null value.");
+        }
+        if (existingTrainer != null) {
+            trainerRepository.put(trainer.getUserName(), updatedTrainee);
         } else {
-        throw new IllegalArgumentException("Trainer not found with UserName: " + trainer.getUserName());
-    }
+            throw new RuntimeException("Trainer not found with user name: " + trainer.getUserName());
+        }
     }
 
     private String generate(String firstName, String lastName){

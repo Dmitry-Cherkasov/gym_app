@@ -20,4 +20,9 @@ public class TrainingService extends AbstractService<Training, Long>{
     protected Dao<Training, Long> getDao() {
         return trainingDao;
     }
+
+    @Override
+    public void update(Training entity, String[] updates) {
+
+    }
 }

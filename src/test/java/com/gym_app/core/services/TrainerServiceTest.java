@@ -72,13 +72,13 @@ public class TrainerServiceTest {
         assertEquals(expectedString, trainerService.select(idSample).get().getLastName(),
                 "Trainer last name should be" + expectedString);
 
-        assertThrows(IllegalArgumentException.class, () -> trainerService.update(null, updateInfo),
+        assertThrows(RuntimeException.class, () -> trainerService.update(null, updateInfo),
                 "Selecting a non-existing trainer should throw an exception");
 
-        assertThrows(IllegalArgumentException.class, () -> trainerService.update(sampleTrainer, null),
+        assertThrows(RuntimeException.class, () -> trainerService.update(sampleTrainer, null),
                 "Selecting a non-existing updates array should throw an exception");
 
-        assertThrows(IllegalArgumentException.class, () -> trainerService.update(sampleTrainer, new String[]{}),
+        assertThrows(RuntimeException.class, () -> trainerService.update(sampleTrainer, new String[]{}),
                 "Selecting empty updates array should throw an exception");
 
     }

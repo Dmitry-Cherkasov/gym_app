@@ -6,19 +6,18 @@ import com.gym_app.core.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.*;
 
 
 @Component
-public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
+public class TraineeMapDaoImplementation implements Dao<Trainee, String> {
     private final TraineeRepository traineeRepository;
 
     @Autowired
-    public TraineeMapDaoImplementation(TraineeRepository traineeRepository){
+    public TraineeMapDaoImplementation(TraineeRepository traineeRepository) {
         this.traineeRepository = traineeRepository;
     }
-    
+
 
     @Override
     public Optional<Trainee> getById(String id) {
@@ -45,33 +44,21 @@ public class TraineeMapDaoImplementation implements Dao<Trainee, String>{
 
 
     @Override
-    public void update(Trainee trainee, String[] params) {
+    public void update(Trainee trainee, Trainee updatedTrainee) {
         Trainee existingTrainee = traineeRepository.get(trainee.getUserName());
-        if (params.length < 7) {
-            throw new IllegalArgumentException("Invalid number of parameters. Expected 7 parameters.");
-        }
-        for(String element: params){
-            if(element == null){
-                throw new IllegalArgumentException("Invalid parameter with Null value.");
-            }
-        }
-        if (existingTrainee != null ) {
-            existingTrainee.setFirstName(params[0]);
-            existingTrainee.setLastName(params[1]);
-            existingTrainee.setUserName(params[2]);
-            existingTrainee.setPassword(params[3]);
-            existingTrainee.setActive(Boolean.parseBoolean(params[4]));
-            LocalDate changedDate = LocalDate.parse(params[5]);
-            existingTrainee.setDateOfBirth(changedDate);
-            existingTrainee.setAddress(params[6]);
 
-            traineeRepository.put(trainee.getUserName(), existingTrainee);
+        if (updatedTrainee == null) {
+            throw new RuntimeException("Invalid parameter with Null value.");
+        }
+        if (existingTrainee != null) {
+            traineeRepository.put(trainee.getUserName(), updatedTrainee);
         } else {
-            throw new IllegalArgumentException("Trainee not found with user name: " + trainee.getUserName());
+            throw new RuntimeException("Trainee not found with user name: " + trainee.getUserName());
         }
     }
 
-    private String generate(String firstName, String lastName){
+
+    private String generate(String firstName, String lastName) {
         String baseUserName = firstName + "." + lastName;
         String userName = baseUserName;
         int serialNumber = 1;

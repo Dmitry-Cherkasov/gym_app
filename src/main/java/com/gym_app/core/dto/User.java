@@ -2,23 +2,24 @@ package com.gym_app.core.dto;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table (name = "\"USER\"")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "USER_ID")
-    private long id;
+    private Long userId;
     @Column(name = "FIRST_NAME", length=50, nullable=false)
     private String firstName;
     @Column(name = "LAST_NAME", length=50, nullable=false)
     private String lastName;
     @Column(name = "USER_NAME", length=101, nullable=false, unique=true)
     private String userName;
-    @Column(name = "PASSWORD", length=10, nullable=false)
+    @Column(name = "PASSWORD", length=150, nullable=false)
     private String password;
     @Column(name = "IS_ACTIVE", nullable=false)
     private boolean isActive;
@@ -33,12 +34,12 @@ public class User {
         this.isActive = isActive;
     }
 
-    public long getId() {
-        return id;
+    public Long getId() {
+        return userId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setId(Long id) {
+        this.userId = id;
     }
 
     public String getFirstName() {
@@ -84,10 +85,11 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                ", " + firstName + '\'' +
-                ", " + lastName + '\'' +
-                ", user= " + userName + '\'' +
-                ", password='" + password + '\'' +
+                "userId=" + userId +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 

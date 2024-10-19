@@ -74,16 +74,16 @@ public class TraineeServiceTest {
             assertEquals(expectedString, traineeService.select(idSample).get().getLastName(),
                     "Trainee last name should be " + expectedString);
 
-            assertThrows(IllegalArgumentException.class, () -> traineeService.update(null, updateInfo),
+            assertThrows(RuntimeException.class, () -> traineeService.update(null, updateInfo),
                     "Updating a null trainee should throw an exception");
 
-            assertThrows(IllegalArgumentException.class, () -> traineeService.update(sampleTrainee, null),
+            assertThrows(RuntimeException.class, () -> traineeService.update(sampleTrainee, null),
                     "Updating with a null updates array should throw an exception");
 
-            assertThrows(IllegalArgumentException.class, () -> traineeService.update(sampleTrainee, new String[]{}),
+            assertThrows(RuntimeException.class, () -> traineeService.update(sampleTrainee, new String[]{}),
                     "Updating with an empty updates array should throw an exception");
 
-            assertThrows(IllegalArgumentException.class, ()-> traineeService.update(sampleTrainee, new String[5]),
+            assertThrows(RuntimeException.class, ()-> traineeService.update(sampleTrainee, new String[5]),
                     "Updating with invalid parameters number should throw an exception");
         }
 

@@ -1,27 +1,32 @@
 package com.gym_app.core.configuration;
 
+import com.gym_app.core.dao.TraineeJpaDaoImpl;
+import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.User;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeService;
 import com.gym_app.core.services.TrainerService;
 import com.gym_app.core.services.TrainingService;
-import com.gym_app.core.util.ResourceFileReader;
-import com.gym_app.core.util.TraineeFactory;
-import com.gym_app.core.util.TrainerFactory;
-import com.gym_app.core.util.TrainingFactory;
+import com.gym_app.core.util.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+
 //@Configuration
-public class StartupConfiguration {
+public class Tester {
+    @Autowired
+    private TraineeJpaDaoImpl traineeJpaDao;
+    @Autowired
+    private TrainerJpaDaoImpl trainerJpaDao;
     @Autowired
     private TraineeFactory traineeFactory;
     @Autowired
@@ -42,54 +47,43 @@ public class StartupConfiguration {
     private String trainingsFilePath;
 
     @PostConstruct
-    public void init() {
+    public void config() {
         addTrainees();
         addTrainers();
-//        addTrainings();
+
     }
 
-    public void addTrainers() {
-        ArrayList<String> trainerData;
-        try {
-            trainerData = ResourceFileReader.readFile(trainerFilePath);
-            for (String entry : trainerData) {
-                String[] args = entry.split(",");
-                Trainer trainer = trainerFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), args[3]);
-                trainerService.create(trainer);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void addTrainees() {
+    private void addTrainees(){
         ArrayList<String> traineeData;
         try {
             traineeData = ResourceFileReader.readFile(traineeFilePath);
             for (String entry : traineeData) {
                 String[] args = entry.split(",");
-                Trainee trainee = traineeFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), args[3], args[4]);
-                traineeService.create(trainee);
+                Trainee trainee = traineeFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), LocalDate.parse(args[3]));
+                trainee.setUserName(trainee.getFirstName() + "." + trainee.getLastName());
+                trainee.setPassword(PasswordGenerator.createPassword(10));
+                trainee.setAddress(args[4]);
+                traineeJpaDao.save(trainee);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    public void addTrainings() {
-        ArrayList<String> trainingsData;
+    private void addTrainers(){
+        ArrayList<String> trainerData;
         try {
-            trainingsData = ResourceFileReader.readFile(trainingsFilePath);
-            for (String entry : trainingsData) {
+            trainerData = ResourceFileReader.readFile(trainerFilePath);
+            for (String entry : trainerData) {
                 String[] args = entry.split(",");
-                Training training = trainingFactory.createService(Long.parseLong(args[0]), Long.parseLong(args[1]), args[2], LocalDate.parse(args[3]), Integer.parseInt(args[4]), TrainingType.valueOf(args[5]));
-                trainingService.create(training);
+                Trainer trainer = trainerFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), TrainingType.valueOf(args[3]));
+                trainer.setUserName(trainer.getFirstName() + "." + trainer.getLastName());
+                trainer.setPassword(PasswordGenerator.createPassword(10));
+                trainerJpaDao.save(trainer);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 }
