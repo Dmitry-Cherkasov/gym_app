@@ -8,18 +8,17 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "TRAINING")
-public class Training implements Serializable {
+public class Training implements Serializable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long trainingId;
+    private Long trainingId;
     @Transient
-    private long traineeId;
+    private Long traineeId;
     @Transient
-    private long trainerId;
+    private Long trainerId;
     @Column(name = "TRAINING_NAME", nullable = false)
     String trainingName;
     @Column(name = "TRAINING_DATE", nullable = false)
-    @Temporal(TemporalType.DATE)
     LocalDate trainingDate;
     @Column(name = "DURATION", nullable = false)
     int duration;
@@ -62,7 +61,7 @@ public class Training implements Serializable {
         this.trainee = trainee;
     }
 
-    public long getTrainingId() {
+    public Long getTrainingId() {
         return trainingId;
     }
 
@@ -70,19 +69,19 @@ public class Training implements Serializable {
         this.trainingId = trainingId;
     }
 
-    public long getTraineeId() {
+    public Long getTraineeId() {
         return traineeId;
     }
 
-    public void setTraineeId(long traineeId) {
+    public void setTraineeId(Long traineeId) {
         this.traineeId = traineeId;
     }
 
-    public long getTrainerId() {
+    public Long getTrainerId() {
         return trainerId;
     }
 
-    public void setTrainerId(long trainerId) {
+    public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
     }
 
@@ -122,5 +121,23 @@ public class Training implements Serializable {
         this.trainingType = trainingType;
     }
 
+    @Override
+    public String toString() {
+        return "Training{" +
+                "trainingId=" + trainingId +
+                ", traineeId=" + traineeId +
+                ", trainerId=" + trainerId +
+                ", trainingName='" + trainingName + '\'' +
+                ", trainingDate=" + trainingDate +
+                ", duration=" + duration +
+                ", trainingType=" + trainingType +
+                ", trainer=" + trainer +
+                ", trainee=" + trainee +
+                '}';
+    }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

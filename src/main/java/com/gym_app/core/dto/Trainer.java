@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "TRAINER")
+@PrimaryKeyJoinColumn(name = "TRAINER_ID")
 public class Trainer extends User{
     @Column(name = "SPECIALIZATION", nullable = false)
     @Enumerated(EnumType.STRING)

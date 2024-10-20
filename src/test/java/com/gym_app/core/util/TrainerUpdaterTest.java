@@ -44,7 +44,7 @@ class TrainerUpdaterTest {
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> TrainerUpdater.updateTrainer(trainer, params));
 
-        assertEquals("Invalid number of parameters. Expected 7 parameters.", exception.getMessage());
+        assertEquals("Invalid number of parameters. Expected 6 parameters.", exception.getMessage());
     }
 
     @Test

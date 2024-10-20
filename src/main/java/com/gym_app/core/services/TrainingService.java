@@ -3,8 +3,11 @@ package com.gym_app.core.services;
 import com.gym_app.core.dao.Dao;
 import com.gym_app.core.dao.TrainingMapDaoImplementation;
 import com.gym_app.core.dto.Training;
+import com.gym_app.core.util.TrainingUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class TrainingService extends AbstractService<Training, Long>{
@@ -22,7 +25,12 @@ public class TrainingService extends AbstractService<Training, Long>{
     }
 
     @Override
-    public void update(Training entity, String[] updates) {
-
+    public void update(Training training, String[] updates) {
+        try {
+            Training updatedTraining = TrainingUpdater.updateTraining(training, updates);
+            trainingDao.update(training,updatedTraining);
+        }catch (RuntimeException e){
+            throw new RuntimeException("Update failed for training:" + training + " with params: " + Arrays.toString(updates));
+        }
     }
 }

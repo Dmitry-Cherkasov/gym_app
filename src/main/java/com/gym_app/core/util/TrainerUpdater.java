@@ -10,7 +10,7 @@ public class TrainerUpdater {
             throw new RuntimeException("trainer object cannot be null.");
         }
         if (params.length < 6) {
-            throw new RuntimeException("Invalid number of parameters. Expected 7 parameters.");
+            throw new RuntimeException("Invalid number of parameters. Expected 6 parameters.");
         }
         for (String element : params) {
             if (element == null) {

@@ -10,7 +10,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private Long userId;
     @Column(name = "FIRST_NAME", length=50, nullable=false)

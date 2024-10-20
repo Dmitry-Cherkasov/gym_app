@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "TRAINEE")
+@PrimaryKeyJoinColumn(name = "TRAINEE_ID")
 public class Trainee extends User {
     @Column (name = "DATE_OF_BIRTH")
     @Temporal(TemporalType.DATE)
@@ -20,8 +21,6 @@ public class Trainee extends User {
         this.dateOfBirth = date;
         this.address = address;
     }
-
-
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;

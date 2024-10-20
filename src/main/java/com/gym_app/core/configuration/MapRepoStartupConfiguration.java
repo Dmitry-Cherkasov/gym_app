@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-//@Configuration
-public class StartupConfiguration {
+@Configuration
+public class MapRepoStartupConfiguration {
     @Autowired
     private TraineeFactory traineeFactory;
     @Autowired

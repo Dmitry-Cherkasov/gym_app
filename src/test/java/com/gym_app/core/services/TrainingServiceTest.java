@@ -71,13 +71,13 @@ public class TrainingServiceTest {
         assertEquals(expectedString, trainingsService.select(idSample).get().getTrainingName(),
                 "Training name should be " + expectedString);
 
-        assertThrows(IllegalArgumentException.class, () -> trainingsService.update(null, updateInfo),
+        assertThrows(RuntimeException.class, () -> trainingsService.update(null, updateInfo),
                 "Updating a null training should throw an exception");
 
-        assertThrows(IllegalArgumentException.class, () -> trainingsService.update(sampleTraining, null),
+        assertThrows(RuntimeException.class, () -> trainingsService.update(sampleTraining, null),
                 "Updating with a null updates array should throw an exception");
 
-        assertThrows(IllegalArgumentException.class, () -> trainingsService.update(sampleTraining, new String[]{}),
+        assertThrows(RuntimeException.class, () -> trainingsService.update(sampleTraining, new String[]{}),
                 "Updating with an empty updates array should throw an exception");
     }
 

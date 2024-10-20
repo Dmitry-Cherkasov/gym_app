@@ -53,6 +53,7 @@ public abstract class JpaDao<T extends User, V> implements Dao<T, V> {
                 return entityManager.merge(t);
             } else {
                 entityManager.persist(t);
+                t = getByUserName(t.getUserName()).get();
                 return t;
             }
         } catch (Exception e) {
