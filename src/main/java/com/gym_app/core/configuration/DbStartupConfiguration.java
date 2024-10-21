@@ -7,6 +7,7 @@ import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
+import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TraineeService;
 import com.gym_app.core.services.TrainerService;
 import com.gym_app.core.services.TrainingService;
@@ -39,7 +40,7 @@ public class DbStartupConfiguration {
     @Autowired
     private TrainerService trainerService;
     @Autowired
-    private TraineeService traineeService;
+    private TraineeDbService traineeService;
     @Autowired
     private TrainingService trainingService;
     @Value("${storage.trainers.data.file.path}")
@@ -54,9 +55,9 @@ public class DbStartupConfiguration {
 
     @PostConstruct
     public void config() {
-        addTrainees();
-        addTrainers();
-        addTrainings();
+//        addTrainees();
+//        addTrainers();
+//        addTrainings();
     }
 
     private void addTrainees() {

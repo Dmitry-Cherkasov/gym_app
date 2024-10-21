@@ -2,8 +2,11 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dto.User;
+import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.PasswordGenerator;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDbService<T extends User> {
@@ -81,6 +84,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
+
     private String generate(String firstName, String lastName) {
         String baseUserName = firstName + "." + lastName;
         String userName = baseUserName;
@@ -93,7 +97,7 @@ public abstract class AbstractDbService<T extends User> {
         return userName;
     }
 
-    private boolean authenticate(String username, String password) {
+    protected boolean authenticate(String username, String password) {
         Optional<T> userOpt = getDao().getByUserName(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();

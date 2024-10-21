@@ -1,6 +1,7 @@
 package com.gym_app.core.services;
 import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dto.Trainer;
+import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.PasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -149,5 +152,26 @@ class TrainerDBServiceTest {
                 () -> trainerDBService.update(trainer, trainer.getUserName(), "wrongPassword", updates));
 
         assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+    }
+
+    @Test
+    void getTrainerTrainings_Test() {
+        assertThrows(SecurityException.class, () -> trainerDBService.getTrainerTrainings(
+                        trainer.getUserName(),
+                        "wrongPassword",
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(10),
+                        "David.Jones",
+                        TrainingType.ZUMBA),
+                "Failed authentication should throw exception");
+
+        List<Training> trainings = trainerDBService.getTrainerTrainings(
+                "Sophia.Taylor",
+                "UhzD4kBouN",
+                LocalDate.now(),
+                LocalDate.now().plusDays(10),
+                "Clara.Kim",
+                TrainingType.YOGA);
+        assertTrue(trainings.size() > 0);
     }
 }

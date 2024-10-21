@@ -10,6 +10,7 @@ import com.gym_app.core.util.TrainerFactory;
 import com.gym_app.core.util.TrainingFactory;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = CoreApplication.class)
+@AutoConfigureMockMvc
 class TrainingJpaDaoTest {
 
     @Autowired
@@ -38,38 +40,20 @@ class TrainingJpaDaoTest {
     @Autowired
     TraineeJpaDaoImpl traineeJpaDao;
 
+
+    private Trainer trainer = new Trainer("Red", "One", "Red.One", "password01", true, TrainingType.FITNESS);
+    private Trainee trainee = new Trainee("Green", "One", "Green.One", "password02", true, LocalDate.parse("2020-01-05"), "Tokio");
     private Training training;
-    private Trainer trainer;
-    private Trainee trainee;
     private int initialDbSize;
+
 
     @BeforeEach
     public void setup() {
         initialDbSize = trainingJpaDao.getAll().size();
-        trainer = trainerFactory.createUser("Red", "One", true, TrainingType.FITNESS);
-        trainer.setUserName("Red.One");
-        trainer.setPassword("password01");
-        trainer = trainerJpaDao.save(trainer);
-        trainee = traineeFactory.createUser("Green", "One", true, LocalDate.parse("2020-01-05"), "Tokio");
-        trainee.setUserName("Green.One");
-        trainee.setPassword("password02");
-        trainee = traineeJpaDao.save(trainee);
-
         training = trainingFactory.createTraining(trainee, trainer);
         training = trainingJpaDao.save(training);
     }
 
-    @AfterEach
-    public void clear() {
-        trainingJpaDao.delete(training);
-        traineeJpaDao.delete(trainee);
-        trainerJpaDao.delete(trainer);
-
-        trainer = null;
-        trainee = null;
-        training = null;
-
-    }
 
 
     @Test

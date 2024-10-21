@@ -17,7 +17,6 @@ public abstract class JpaDao<T extends User, V> implements Dao<T, V> {
     private EntityManager entityManager;
     private final Class<T> entityClass;
 
-
     protected JpaDao(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
@@ -53,8 +52,7 @@ public abstract class JpaDao<T extends User, V> implements Dao<T, V> {
                 return entityManager.merge(t);
             } else {
                 entityManager.persist(t);
-                t = getByUserName(t.getUserName()).get();
-                return t;
+                return getByUserName(t.getUserName()).get();
             }
         } catch (Exception e) {
 
@@ -62,6 +60,13 @@ public abstract class JpaDao<T extends User, V> implements Dao<T, V> {
         }
     }
 
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     public void updatePassword(T t, String newPassword) {
         if (newPassword == null || newPassword.isBlank())

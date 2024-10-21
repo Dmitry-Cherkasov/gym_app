@@ -2,6 +2,9 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.TraineeJpaDaoImpl;
 import com.gym_app.core.dto.Trainee;
+import com.gym_app.core.dto.Trainer;
+import com.gym_app.core.dto.Training;
+import com.gym_app.core.enums.TrainingType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +57,6 @@ class TraineeDbServiceTest {
         assertNotEquals(trainee.getId(), createdTrainee.getId());
         assertEquals("Bob.Brown", createdTrainee.getUserName());
     }
-
 
 
     @Test
@@ -143,4 +146,70 @@ class TraineeDbServiceTest {
 
         assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
     }
+
+    @Test
+    void getTraineeTrainings_Test() {
+        assertThrows(SecurityException.class, () -> traineeDbService.getTraineeTrainings(
+                        trainee.getUserName(),
+                        "wrongPassword",
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(10),
+                        "Michael.Johnson",
+                        TrainingType.ZUMBA),
+                "Failed authentication should throw exception");
+
+        List<Training> trainings = traineeDbService.getTraineeTrainings(
+                "Grace.Hall",
+                "wQ7TfheQnV",
+                LocalDate.now(),
+                LocalDate.now().plusDays(10),
+                "John.Smith",
+                TrainingType.RESISTANCE);
+        assertTrue(trainings.size() > 0);
+    }
+
+    @Test
+    void getAvailableTrainers_Test() {
+        List<Trainer> trainings = traineeDbService.getAvailableTrainers(
+                trainee.getUserName(),
+                trainee.getPassword());
+        assertTrue(trainings.size() > 0);
+
+        assertThrows(SecurityException.class, () -> traineeDbService.getAvailableTrainers(
+                        "Brian.Lee",
+                        "wrongPassword"),
+                "Failed authentication should throw exception");
+    }
+
+    @Test
+    void addTraining_Test() {
+
+        assertDoesNotThrow(() -> traineeDbService.addTraining(
+                        trainee.getUserName(),
+                        trainee.getPassword(),
+                        "Test training1",
+                        TrainingType.YOGA,
+                        LocalDate.now().plusDays(2),
+                        60),
+                "Successful training save should not throw an exception");
+
+        Training training2 = traineeDbService.addTraining(
+                trainee.getUserName(),
+                trainee.getPassword(),
+                "Test training2",
+                TrainingType.STRETCHING,
+                LocalDate.now().plusDays(3),
+                60);
+
+        assertThrows(SecurityException.class, () -> traineeDbService.addTraining(
+                        trainee.getUserName(),
+                        "WrongPass",
+                        "Test training",
+                        TrainingType.YOGA,
+                        LocalDate.now().plusDays(2),
+                        60),
+                "Authentication fail should throw an exception");
+    }
+
+
 }

@@ -3,16 +3,22 @@ package com.gym_app.core.dto;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "TRAINEE")
-@PrimaryKeyJoinColumn(name = "TRAINEE_ID")
 public class Trainee extends User {
+    @PrimaryKeyJoinColumn(name = "TRAINEE_ID")
+    @OneToOne
+    private User user;
     @Column (name = "DATE_OF_BIRTH")
     @Temporal(TemporalType.DATE)
     private LocalDate dateOfBirth;
     @Column(name = "ADDRESS", length = 100)
     private String address;
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Training> trainings = new ArrayList<>();
 
     public Trainee(){}
 
@@ -20,6 +26,15 @@ public class Trainee extends User {
         super(firstName, lastName, userName, password, isActive);
         this.dateOfBirth = date;
         this.address = address;
+    }
+
+
+    public List<Training> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<Training> trainings) {
+        this.trainings = trainings;
     }
 
     public LocalDate getDateOfBirth() {

@@ -26,10 +26,10 @@ public class Training implements Serializable, Cloneable {
     @Enumerated(EnumType.STRING)
     private TrainingType trainingType;
     @ManyToOne
-    @JoinColumn(name = "TRAINER_ID", nullable = false)
+    @JoinColumn(name = "TRAINER_ID")
     private Trainer trainer;
     @ManyToOne
-    @JoinColumn(name = "TRAINEE_ID", nullable = false)
+    @JoinColumn(name = "TRAINEE_ID")
     private Trainee trainee;
 
     public Training() {
