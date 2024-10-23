@@ -15,7 +15,7 @@ public class JpaLoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(JpaLoggingAspect.class);
 
-    @Before("execution(* com.gym_app.core.repository.*.*(..))")
+    @Before("execution(* com.gym_app.core.dao.*.*(..))")
     public void logBefore(JoinPoint joinPoint) {
         logger.info("Entering method: " + joinPoint.getSignature().getName());
         logger.info("Arguments: ");
@@ -24,15 +24,15 @@ public class JpaLoggingAspect {
         }
     }
 
-    @AfterReturning(value = "execution(* com.gym_app.core.repository.*.*(..))", returning = "result")
+    @AfterReturning(value = "execution(* com.gym_app.core.dao.*.*(..))", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
         logger.info("Exiting method: " + joinPoint.getSignature().getName());
         logger.info("Return value: " + result);
     }
 
-    @AfterThrowing(value = "execution(* com.gym_app.core.repository.*.*(..))", throwing = "exception")
+    @AfterThrowing(value = "execution(* com.gym_app.core.dao.*.*(..))", throwing = "exception")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
         logger.error("Exception in method: " + joinPoint.getSignature().getName());
-        logger.error("Exception: " + exception.getMessage(), exception);
+        logger.error("Exception: " + exception.getMessage());
     }
 }

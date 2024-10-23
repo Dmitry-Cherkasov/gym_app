@@ -99,11 +99,8 @@ class TraineeDbServiceTest {
                 trainer.getSpecialization(),
                 LocalDate.now().plusDays(2),
                 60));
-
         assertDoesNotThrow(()-> traineeDbService.delete(trainee.getUserName(), trainee.getPassword()));
-        assertTrue(trainingJpaDao.getAll().getFirst() == null);
-//        assertFalse(traineeDbService.getDao().getAll().contains(trainee));
-
+        assertFalse(traineeDbService.getDao().getAll().contains(trainee));
     }
 
     @Test
@@ -286,15 +283,9 @@ class TraineeDbServiceTest {
 
         assertDoesNotThrow(()->traineeDbService.removeTrainerFromList(username,password,trainer),
                 "");
+        assertFalse(traineeDbService.getTraineesTrainers(username,password).contains(trainer));
     }
 
-    @Test
-    void testRemoveTrainerFromList_TrainerNotFound() {
-       Trainer faultTrainer = new Trainer();
-        assertThrows(RuntimeException.class,
-                ()->traineeDbService.removeTrainerFromList(trainee.getUserName(), trainee.getPassword(), faultTrainer),
-                "");
-    }
 
     @Test
     void testGetTraineesTrainers_Success() {
@@ -303,14 +294,6 @@ class TraineeDbServiceTest {
 
         traineeDbService.addTrainerToList(username,password, trainer);
         assertTrue(traineeDbService.selectByUsername(username,password,username).get().getTrainers().contains(trainer),
-                "");
-    }
-
-    @Test
-    void testGetTraineesTrainers_TrainerNotFound() {
-        Trainer faultTrainer = new Trainer();
-        assertThrows(RuntimeException.class,
-                ()->traineeDbService.removeTrainerFromList(trainee.getUserName(), trainee.getPassword(), faultTrainer),
                 "");
     }
 

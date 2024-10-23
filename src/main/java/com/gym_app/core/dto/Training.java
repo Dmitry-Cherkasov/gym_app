@@ -27,10 +27,10 @@ public class Training implements Serializable, Cloneable {
     @Enumerated(EnumType.STRING)
     private TrainingType trainingType;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINER_ID")
+    @JoinColumn(name = "TRAINER")
     private Trainer trainer;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TRAINEE_ID")
+    @JoinColumn(name = "TRAINEE")
     private Trainee trainee;
 
 

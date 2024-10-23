@@ -23,7 +23,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public void delete(String username, String password) {
+    public boolean delete(String username, String password) {
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
         }
@@ -32,7 +32,7 @@ public abstract class AbstractDbService<T extends User> {
         }catch (RuntimeException exception){
             throw new RuntimeException(getTypeName() + " with username " + username + " not found.");
         }
-
+        return true;
     }
 
 

@@ -2,12 +2,14 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dao.TraineeJpaDaoImpl;
+import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dao.TrainingJpaDao;
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TraineeUpdater;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +18,18 @@ import java.util.List;
 
 
 @Service
+@Transactional
 public class TraineeDbService extends AbstractDbService<Trainee>{
 
     private final TraineeJpaDaoImpl traineeJpaDao;
     private TrainingJpaDao trainingJpaDao;
+    private TrainerJpaDaoImpl trainerJpaDao;
 
     @Autowired
-    public TraineeDbService(TraineeJpaDaoImpl traineeJpaDao, TrainingJpaDao trainingJpaDao) {
+    public TraineeDbService(TraineeJpaDaoImpl traineeJpaDao, TrainingJpaDao trainingJpaDao, TrainerJpaDaoImpl trainerJpaDao) {
         this.traineeJpaDao = traineeJpaDao;
         this.trainingJpaDao = trainingJpaDao;
+        this.trainerJpaDao = trainerJpaDao;
     }
 
 
@@ -36,6 +41,38 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
     @Override
     protected String getTypeName() {
         return "trainee";
+    }
+
+    @Override
+    public boolean delete(String username, String password) {
+        if (!authenticate(username, password)) {
+            throw new SecurityException("Authentication failed for trainee with username: " + username);
+        }
+        try {
+            Trainee trainee = traineeJpaDao.getByUserName(username)
+                    .orElseThrow(() -> new RuntimeException("Failed to find trainee with username: " + username));
+
+            List<Training> trainings = trainee.getTrainings();
+            if (trainings != null && !trainings.isEmpty()) {
+                trainings.forEach(training -> trainingJpaDao.delete(training));
+            }
+
+            List<Trainer> trainers = trainee.getTrainers();
+            if(trainers != null && !trainers.isEmpty()){
+                trainers.forEach(trainer -> {
+                    trainee.removeTrainer(trainer);
+                    trainerJpaDao.save(trainer);
+                });
+            }
+            trainee.getTrainings().clear();
+
+            traineeJpaDao.save(trainee);
+
+            traineeJpaDao.delete(trainee);
+            return true;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error occurred while deleting trainee with username: " + username, e);
+        }
     }
 
     @Override
@@ -76,21 +113,23 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for trainee with username: " + username);
         }
-        Training training = new Training();
         try{
+            Training training = new Training();
             Trainee trainee = traineeJpaDao.getByUserName(username).orElseThrow(
-                    ()->new RuntimeException("Not found trainee with useranme: " + username)
+                    ()->new RuntimeException("Not found trainee with username: " + username)
             );
-            training.setTrainee(trainee);
             training.setTrainer(trainer);
             training.setTrainingName(trainingName);
             training.setTrainingType(trainingType);
             training.setTrainingDate(date);
             training.setDuration(duration);
 
+            trainee.addTraining(training);
+            traineeJpaDao.save(trainee);
+
             return trainingJpaDao.save(training);
         }catch (RuntimeException e){
-            throw new RuntimeException("Error with adding new training: " + training, e);
+            throw new RuntimeException("Error with adding new training", e);
         }
 
     }
@@ -117,7 +156,6 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         try{
             Trainee trainee = traineeJpaDao.getByUserName(username)
                     .orElseThrow(() -> new RuntimeException ("Trainee not found"));
-
             trainee.removeTrainer(trainer);
             traineeJpaDao.save(trainee);
         }catch (RuntimeException e){

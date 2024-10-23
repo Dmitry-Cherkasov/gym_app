@@ -79,6 +79,13 @@ public class Trainee extends User {
         this.user = user;
     }
 
+    public void addTraining(Training training){
+        if(!trainings.contains(training)){
+            trainings.add(training);
+            training.setTrainee(this);
+        }
+    }
+
     public void addTrainer(Trainer trainer) {
         if (!trainers.contains(trainer)) {
             trainers.add(trainer);

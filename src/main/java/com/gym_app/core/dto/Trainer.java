@@ -16,7 +16,7 @@ public class Trainer extends User{
     @Column(name = "SPECIALIZATION", nullable = false)
     @Enumerated(EnumType.STRING)
     private TrainingType specialization;
-    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY)
     private List<Training> trainings = new ArrayList<>();
     @ManyToMany(mappedBy = "trainers")
     private List<Trainee> trainees;

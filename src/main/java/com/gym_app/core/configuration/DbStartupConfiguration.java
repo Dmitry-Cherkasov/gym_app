@@ -5,10 +5,8 @@ import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dao.TrainingJpaDao;
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeDbService;
-import com.gym_app.core.services.TraineeService;
 import com.gym_app.core.services.TrainerService;
 import com.gym_app.core.services.TrainingService;
 import com.gym_app.core.util.*;
@@ -55,14 +53,15 @@ public class DbStartupConfiguration {
 
     @PostConstruct
     public void config() {
-        addTrainees();
         addTrainers();
+        addTrainees();
         addTrainings();
     }
 
     private void addTrainees() {
         trainees = new ArrayList<>();
         ArrayList<String> traineeData;
+        Random random = new Random();
         try {
             traineeData = ResourceFileReader.readFile(traineeFilePath);
             for (String entry : traineeData) {
@@ -71,6 +70,7 @@ public class DbStartupConfiguration {
                 trainee.setUserName(trainee.getFirstName() + "." + trainee.getLastName());
                 trainee.setPassword(PasswordGenerator.createPassword(10));
                 trainee.setAddress(args[4]);
+                trainee.addTrainer(trainers.get(random.nextInt(5)));
                 trainee = traineeJpaDao.save(trainee);
                 trainees.add(trainee);
             }
@@ -102,17 +102,10 @@ public class DbStartupConfiguration {
         for(int i=0; i < 10; i++){
             Trainee trainee = trainees.get(random.nextInt(trainees.size()));
             Trainer trainer = trainers.get(random.nextInt(trainers.size()));
-            Training training = trainingFactory.createService(
-                    trainee.getId(),
-                    trainer.getId(),
-                    trainer.getSpecialization().name() + " training",
-                    LocalDate.now().plusDays(i),
-                    90,
-                    trainer.getSpecialization());
-            training.setTrainer(trainer);
-            training.setTrainee(trainee);
             try{
-                trainingJpaDao.save(training);
+                traineeService.addTraining(trainee.getUserName(),trainee.getPassword(),
+                        trainer, trainer.getSpecialization() + " traininig",
+                        trainer.getSpecialization(), LocalDate.now().plusDays(2), 90);
             }catch (RuntimeException exception){
                 throw new RuntimeException(exception.getMessage());
             }
