@@ -4,17 +4,20 @@ import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Transactional
 @Repository
 public class TrainerJpaDaoImpl extends JpaDao<Trainer, Long> {
 
     public TrainerJpaDaoImpl(){
         super(Trainer.class);
     }
+
     public List<Training> getTrainingsByCriteria(String username, LocalDate fromDate, LocalDate toDate, String traineeName, TrainingType trainingType) {
         String query = "SELECT t FROM Training t WHERE 1=1"
                 + (username != null && !username.isEmpty() ? " AND t.trainer.user.userName = :username" : "")

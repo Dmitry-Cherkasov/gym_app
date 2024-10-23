@@ -55,9 +55,9 @@ public class DbStartupConfiguration {
 
     @PostConstruct
     public void config() {
-//        addTrainees();
-//        addTrainers();
-//        addTrainings();
+        addTrainees();
+        addTrainers();
+        addTrainings();
     }
 
     private void addTrainees() {

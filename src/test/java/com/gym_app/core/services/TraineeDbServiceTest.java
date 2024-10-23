@@ -1,6 +1,7 @@
 package com.gym_app.core.services;
 
-import com.gym_app.core.dao.TraineeJpaDaoImpl;
+import com.gym_app.core.dao.TrainerJpaDaoImpl;
+import com.gym_app.core.dao.TrainingJpaDao;
 import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.dto.Training;
@@ -25,11 +26,13 @@ class TraineeDbServiceTest {
 
     @Autowired
     private TraineeDbService traineeDbService;
-
     @Autowired
-    private TraineeJpaDaoImpl traineeJpaDao;
+    private TrainerJpaDaoImpl trainerJpaDao;
+    @Autowired
+    private TrainingJpaDao trainingJpaDao;
 
     private Trainee trainee;
+    private Trainer trainer;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +45,8 @@ class TraineeDbServiceTest {
         trainee.setAddress("Osaka");
         // Set any other relevant fields for Trainee
         trainee = traineeDbService.create(trainee); // Save the trainee to the database
+        trainer = trainerJpaDao.save(new Trainer("Red", "One", "Red.One", "password01", true, TrainingType.FITNESS));
+
     }
 
     @Test
@@ -61,23 +66,49 @@ class TraineeDbServiceTest {
 
     @Test
     void delete_ShouldRemoveTrainee_WhenAuthenticated() {
-        assertDoesNotThrow(() -> traineeDbService.delete(trainee.getId(), trainee.getUserName(), trainee.getPassword()));
-
-        Optional<Trainee> deletedTrainee = traineeJpaDao.getById(trainee.getId());
-        assertFalse(deletedTrainee.isPresent());
+        assertTrue(traineeDbService.getDao().getAll().contains(trainee));
+        assertDoesNotThrow(() -> traineeDbService.delete(trainee.getUserName(), trainee.getPassword()));
+        assertFalse(traineeDbService.getDao().getAll().contains(trainee));
     }
 
     @Test
     void delete_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> traineeDbService.delete(trainee.getId(), trainee.getUserName(), "wrongPassword"));
+                () -> traineeDbService.delete(trainee.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
+        assertEquals("Authentication failed for trainee with username: " + trainee.getUserName(), exception.getMessage());
+    }
+
+    @Test
+    void delete_ShouldRemoveRelevantTrainings() {
+        Training training = traineeDbService.addTraining(
+                trainee.getUserName(),
+                trainee.getPassword(),
+                trainer,
+                "Test training1",
+                TrainingType.YOGA,
+                LocalDate.now().plusDays(2),
+                60);
+        assertTrue(traineeDbService.getDao().getAll().contains(trainee));
+
+
+        assertDoesNotThrow(()-> traineeDbService.addTraining(trainee.getUserName(),
+                trainee.getPassword(),
+                trainer,
+                trainer.getSpecialization() + " training",
+                trainer.getSpecialization(),
+                LocalDate.now().plusDays(2),
+                60));
+
+        assertDoesNotThrow(()-> traineeDbService.delete(trainee.getUserName(), trainee.getPassword()));
+        assertTrue(trainingJpaDao.getAll().getFirst() == null);
+//        assertFalse(traineeDbService.getDao().getAll().contains(trainee));
+
     }
 
     @Test
     void selectByUsername_ShouldReturnTrainee_WhenAuthenticated() {
-        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername("Alice.Smith", trainee.getPassword());
+        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
 
         assertTrue(foundTrainee.isPresent());
         assertEquals(trainee.getId(), foundTrainee.get().getId());
@@ -86,7 +117,7 @@ class TraineeDbServiceTest {
     @Test
     void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> traineeDbService.selectByUsername("Alice.Smith", "wrongPassword"));
+                () -> traineeDbService.selectByUsername(trainee.getUserName(), "wrongPassword", trainee.getUserName()));
 
         assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
     }
@@ -96,7 +127,7 @@ class TraineeDbServiceTest {
         String newPassword = "newPassword123";
         traineeDbService.changePassword(newPassword, trainee.getUserName(), trainee.getPassword());
 
-        Optional<Trainee> updatedTrainee = traineeJpaDao.getByUserName(trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
         assertTrue(updatedTrainee.isPresent());
         assertEquals(newPassword, updatedTrainee.get().getPassword()); // Ensure to verify the password hash if using hashing
     }
@@ -106,14 +137,14 @@ class TraineeDbServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> traineeDbService.changePassword("newPassword123", trainee.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
+        assertEquals("Authentication failed for trainee with username: " + trainee.getUserName(), exception.getMessage());
     }
 
     @Test
     void changeStatus_ShouldToggleTraineeStatus_WhenAuthenticated() {
         boolean initialStatus = trainee.isActive();
         traineeDbService.changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
-        Optional<Trainee> updatedTrainee = traineeJpaDao.getByUserName(trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
         assertTrue(updatedTrainee.isPresent());
         assertNotEquals(initialStatus, updatedTrainee.get().isActive());
     }
@@ -123,7 +154,7 @@ class TraineeDbServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> traineeDbService.changeStatus(trainee, trainee.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
+        assertEquals("Authentication failed for trainee with username: " + trainee.getUserName(), exception.getMessage());
     }
 
     @Test
@@ -131,7 +162,7 @@ class TraineeDbServiceTest {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "2024-05-05", "Tokio"}; // Modify as per Trainee fields
         traineeDbService.update(trainee, trainee.getUserName(), trainee.getPassword(), updates);
 
-        Optional<Trainee> updatedTrainee = traineeJpaDao.getByUserName(trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
         assertTrue(updatedTrainee.isPresent());
         assertEquals("New FirstName", updatedTrainee.get().getFirstName());
         assertEquals("New LastName", updatedTrainee.get().getLastName());
@@ -144,7 +175,7 @@ class TraineeDbServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> traineeDbService.update(trainee, trainee.getUserName(), "wrongPassword", updates));
 
-        assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
+        assertEquals("Authentication failed for trainee with username: " + trainee.getUserName(), exception.getMessage());
     }
 
     @Test
@@ -158,13 +189,22 @@ class TraineeDbServiceTest {
                         TrainingType.ZUMBA),
                 "Failed authentication should throw exception");
 
+        Training training = traineeDbService.addTraining(
+                trainee.getUserName(),
+                trainee.getPassword(),
+                trainer,
+                trainer.getSpecialization() + " training",
+                trainer.getSpecialization(),
+                LocalDate.now().plusDays(4),
+                60);
         List<Training> trainings = traineeDbService.getTraineeTrainings(
-                "Grace.Hall",
-                "wQ7TfheQnV",
+                trainee.getUserName(),
+                trainee.getPassword(),
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
-                "John.Smith",
-                TrainingType.RESISTANCE);
+                trainer.getUserName(),
+                trainer.getSpecialization());
+        System.out.println("Trainings: " + trainings);
         assertTrue(trainings.size() > 0);
     }
 
@@ -187,6 +227,7 @@ class TraineeDbServiceTest {
         assertDoesNotThrow(() -> traineeDbService.addTraining(
                         trainee.getUserName(),
                         trainee.getPassword(),
+                        trainer,
                         "Test training1",
                         TrainingType.YOGA,
                         LocalDate.now().plusDays(2),
@@ -196,6 +237,7 @@ class TraineeDbServiceTest {
         Training training2 = traineeDbService.addTraining(
                 trainee.getUserName(),
                 trainee.getPassword(),
+                trainer,
                 "Test training2",
                 TrainingType.STRETCHING,
                 LocalDate.now().plusDays(3),
@@ -204,6 +246,7 @@ class TraineeDbServiceTest {
         assertThrows(SecurityException.class, () -> traineeDbService.addTraining(
                         trainee.getUserName(),
                         "WrongPass",
+                        trainer,
                         "Test training",
                         TrainingType.YOGA,
                         LocalDate.now().plusDays(2),
@@ -211,5 +254,64 @@ class TraineeDbServiceTest {
                 "Authentication fail should throw an exception");
     }
 
+
+    @Test
+    void testAddTrainerToList_Success() {
+        String username = trainee.getUserName();
+        String password = trainee.getPassword();
+
+        assertDoesNotThrow(()->traineeDbService.addTrainerToList(username,password,trainer),
+                "");
+
+        trainee = traineeDbService.selectByUsername(username,password,username).get();
+        assertTrue(trainee.getTrainers().contains(trainer));
+    }
+
+    @Test
+    void testAddTrainerToList_AuthenticationFailed() {
+        String username = trainee.getUserName();
+        String password = "wrong_password";
+
+        assertThrows(SecurityException.class, ()->traineeDbService.addTrainerToList(username,password,trainer),"");
+    }
+
+    @Test
+    void testRemoveTrainerFromList_Success() {
+        String username = trainee.getUserName();
+        String password = trainee.getPassword();
+
+        traineeDbService.addTrainerToList(username,password, trainer);
+        assertTrue(traineeDbService.selectByUsername(username,password,username).get().getTrainers().contains(trainer),
+                "");
+
+        assertDoesNotThrow(()->traineeDbService.removeTrainerFromList(username,password,trainer),
+                "");
+    }
+
+    @Test
+    void testRemoveTrainerFromList_TrainerNotFound() {
+       Trainer faultTrainer = new Trainer();
+        assertThrows(RuntimeException.class,
+                ()->traineeDbService.removeTrainerFromList(trainee.getUserName(), trainee.getPassword(), faultTrainer),
+                "");
+    }
+
+    @Test
+    void testGetTraineesTrainers_Success() {
+        String username = trainee.getUserName();
+        String password = trainee.getPassword();
+
+        traineeDbService.addTrainerToList(username,password, trainer);
+        assertTrue(traineeDbService.selectByUsername(username,password,username).get().getTrainers().contains(trainer),
+                "");
+    }
+
+    @Test
+    void testGetTraineesTrainers_TrainerNotFound() {
+        Trainer faultTrainer = new Trainer();
+        assertThrows(RuntimeException.class,
+                ()->traineeDbService.removeTrainerFromList(trainee.getUserName(), trainee.getPassword(), faultTrainer),
+                "");
+    }
 
 }

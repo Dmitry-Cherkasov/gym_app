@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "TRAINING")
@@ -25,12 +26,13 @@ public class Training implements Serializable, Cloneable {
     @Column(name = "TRAINING_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private TrainingType trainingType;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRAINER_ID")
     private Trainer trainer;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TRAINEE_ID")
     private Trainee trainee;
+
 
     public Training() {
     }

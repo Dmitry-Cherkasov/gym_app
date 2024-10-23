@@ -9,13 +9,13 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
-
+@Transactional
 @Repository
 public class TraineeJpaDaoImpl extends JpaDao<Trainee, Long> {
 
@@ -68,5 +68,6 @@ public class TraineeJpaDaoImpl extends JpaDao<Trainee, Long> {
 
         return getEntityManager().createQuery(query).getResultList();
     }
+
 }
 

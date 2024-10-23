@@ -8,7 +8,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -17,6 +19,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = CoreApplication.class)
+@AutoConfigureMockMvc
+@Transactional
 class TraineeJpaDaoImplTest {
     @Autowired
     private TraineeJpaDaoImpl traineeJpaDao;
@@ -24,6 +28,7 @@ class TraineeJpaDaoImplTest {
     private TraineeFactory traineeFactory;
     private Trainee[] trainees;
     private int dbInitialsize;
+    private boolean toBeLaunched;
 
     @BeforeEach
     public void setup() {
@@ -40,10 +45,12 @@ class TraineeJpaDaoImplTest {
             trainee.setUserName(trainee.getFirstName()+"."+trainee.getLastName());
             trainee = traineeJpaDao.save(trainee);
         });
+        toBeLaunched = true;
     }
 
     @AfterEach
     public void clear(){
+        if(toBeLaunched)
         Arrays.stream(trainees).forEach(trainee -> traineeJpaDao.delete(trainee));
     }
 
@@ -86,6 +93,7 @@ class TraineeJpaDaoImplTest {
 
         Optional<Trainee> foundTrainee = traineeJpaDao.getById(trainee.getId());
         assertFalse(foundTrainee.isPresent(), "Deleted trainee should not be present");
+        toBeLaunched = false;
     }
 
     @Test

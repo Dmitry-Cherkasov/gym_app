@@ -32,7 +32,7 @@ public class TrainingJpaDao implements Dao<Training, Long> {
             String query = "SELECT t FROM Training t";
             return entityManager.createQuery(query, Training.class).getResultList();
         } catch (Exception exception) {
-            throw new RuntimeException("Error quering trainings list: " + exception.getMessage(), exception);
+            throw new RuntimeException("Error querying trainings list: " + exception.getMessage(), exception);
         }
     }
 

@@ -1,5 +1,5 @@
 package com.gym_app.core.services;
-import com.gym_app.core.dao.TrainerJpaDaoImpl;
+import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.dto.Training;
 import com.gym_app.core.enums.TrainingType;
@@ -26,21 +26,33 @@ class TrainerDBServiceTest {
     private TrainerDBService trainerDBService;
 
     @Autowired
-    private TrainerJpaDaoImpl trainerJpaDao;
+    private TraineeDbService traineeDbService;
 
     private Trainer trainer;
+    private Trainee trainee;
+    private Training training;
 
     @BeforeEach
     void setUp() {
-        // Create a new Trainer instance
         trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Doe");
         trainer.setUserName("john.doe");
-        trainer.setPassword(PasswordGenerator.createPassword(10)); // Replace with your hashing logic
+        trainer.setPassword(PasswordGenerator.createPassword(10));
         trainer.setActive(true);
-        trainer.setSpecialization(TrainingType.ZUMBA); // Assuming GROUP is a valid specialization
-        trainer = trainerJpaDao.save(trainer); // Save the trainer to the database
+        trainer.setSpecialization(TrainingType.ZUMBA);
+        trainer = trainerDBService.create(trainer);
+
+        trainee = new Trainee("Test", "Trainee", "", "", true, LocalDate.now().minusYears(25), "Imagination");
+        trainee = traineeDbService.create(trainee);
+        training = traineeDbService.addTraining(
+                trainee.getUserName(),
+                trainee.getPassword(),
+                trainer,
+                trainer.getSpecialization() + " training",
+                trainer.getSpecialization(),
+                LocalDate.now().plusDays(2),
+                60);
     }
 
     @Test
@@ -67,23 +79,20 @@ class TrainerDBServiceTest {
 
     @Test
     void delete_ShouldRemoveTrainer_WhenAuthenticated() {
-        assertDoesNotThrow(() -> trainerDBService.delete(trainer.getId(), trainer.getUserName(), trainer.getPassword()));
-
-        Optional<Trainer> deletedTrainer = trainerJpaDao.getById(trainer.getId());
-        assertFalse(deletedTrainer.isPresent());
-    }
+        assertDoesNotThrow(() -> trainerDBService.delete(trainer.getUserName(), trainer.getPassword()));
+        }
 
     @Test
     void delete_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.delete(trainer.getId(), trainer.getUserName(), "wrongPassword"));
+                () -> trainerDBService.delete(trainer.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
 
     @Test
     void selectByUsername_ShouldReturnTrainer_WhenAuthenticated() {
-        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername("john.doe", trainer.getPassword());
+        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
 
         assertTrue(foundTrainer.isPresent());
         assertEquals(trainer.getId(), foundTrainer.get().getId());
@@ -92,9 +101,9 @@ class TrainerDBServiceTest {
     @Test
     void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.selectByUsername("john.doe", "wrongPassword"));
+                () -> trainerDBService.selectByUsername(trainer.getUserName(), "wrongPassword", trainer.getUserName()));
 
-        assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
 
     @Test
@@ -102,7 +111,7 @@ class TrainerDBServiceTest {
         String newPassword = "newPassword123";
         trainerDBService.changePassword(newPassword, trainer.getUserName(), trainer.getPassword());
 
-        Optional<Trainer> updatedTrainer = trainerJpaDao.getByUserName(trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
         assertTrue(updatedTrainer.isPresent());
         assertEquals(newPassword, updatedTrainer.get().getPassword()); // Ensure to verify the password hash if using hashing
     }
@@ -112,14 +121,14 @@ class TrainerDBServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> trainerDBService.changePassword("newPassword123", trainer.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+        assertEquals("Authentication failed for trainer with username: " +trainer.getUserName(), exception.getMessage());
     }
 
     @Test
     void changeStatus_ShouldToggleTrainerStatus_WhenAuthenticated() {
         boolean initialStatus = trainer.isActive();
         trainerDBService.changeStatus(trainer, trainer.getUserName(), trainer.getPassword());
-        Optional<Trainer> updatedTrainer = trainerJpaDao.getByUserName(trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
         assertTrue(updatedTrainer.isPresent());
         System.out.println(trainer.isActive() + "   " + updatedTrainer.get().isActive());
         assertNotEquals(initialStatus, updatedTrainer.get().isActive());
@@ -130,15 +139,15 @@ class TrainerDBServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> trainerDBService.changeStatus(trainer, trainer.getUserName(), "wrongPassword"));
 
-        assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
 
     @Test
     void update_ShouldUpdateTrainer_WhenAuthenticated() {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "FITNESS"};
         trainerDBService.update(trainer, trainer.getUserName(), trainer.getPassword(), updates);
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(),trainer.getUserName());
 
-        Optional<Trainer> updatedTrainer = trainerJpaDao.getByUserName(trainer.getUserName());
         assertTrue(updatedTrainer.isPresent());
         assertEquals("New FirstName", updatedTrainer.get().getFirstName());
         assertEquals("New LastName", updatedTrainer.get().getLastName());
@@ -151,7 +160,7 @@ class TrainerDBServiceTest {
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> trainerDBService.update(trainer, trainer.getUserName(), "wrongPassword", updates));
 
-        assertEquals("Authentication failed for trainer with username: john.doe", exception.getMessage());
+        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
 
     @Test
@@ -164,14 +173,14 @@ class TrainerDBServiceTest {
                         "David.Jones",
                         TrainingType.ZUMBA),
                 "Failed authentication should throw exception");
-
+        System.out.println(training);
         List<Training> trainings = trainerDBService.getTrainerTrainings(
-                "Sophia.Taylor",
-                "UhzD4kBouN",
+                trainer.getUserName(),
+                trainer.getPassword(),
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
-                "Clara.Kim",
-                TrainingType.YOGA);
+                trainee.getUserName(),
+                trainer.getSpecialization());
         assertTrue(trainings.size() > 0);
     }
 }

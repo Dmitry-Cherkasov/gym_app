@@ -16,15 +16,22 @@ public class Trainer extends User{
     @Column(name = "SPECIALIZATION", nullable = false)
     @Enumerated(EnumType.STRING)
     private TrainingType specialization;
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "trainer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Training> trainings = new ArrayList<>();
+    @ManyToMany(mappedBy = "trainers")
+    private List<Trainee> trainees;
 
 
-    public Trainer(){}
+    public Trainer(){
+        trainees = new ArrayList<>();
+        trainings = new ArrayList<>();
+    }
 
     public Trainer(String firstName, String lastName, String userName, String password, boolean isActive, TrainingType specialization) {
         super(firstName, lastName, userName, password, isActive);
         this.specialization = specialization;
+        trainees = new ArrayList<>();
+        trainings = new ArrayList<>();
     }
 
 
@@ -44,6 +51,21 @@ public class Trainer extends User{
         this.specialization = specialization;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Trainee> getTrainees() {
+        return trainees;
+    }
+
+    public void setTrainees(List<Trainee> trainees) {
+        this.trainees = trainees;
+    }
 
     @Override
     public String toString() {

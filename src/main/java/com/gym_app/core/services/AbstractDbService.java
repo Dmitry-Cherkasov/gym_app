@@ -2,11 +2,8 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dto.User;
-import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.PasswordGenerator;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDbService<T extends User> {
@@ -26,24 +23,25 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public void delete(Long id, String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
-        Optional<T> user = getDao().getById(id);
-        if (user.isPresent()) {
-            getDao().delete(user.get());
-        } else {
-            throw new RuntimeException(getTypeName() + " with ID " + id + " not found.");
-        }
-    }
-
-    public Optional<T> selectByUsername(String username, String password) {
+    public void delete(String username, String password) {
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
         }
         try {
-            return getDao().getByUserName(username);
+            getDao().deleteByUserName(username);
+        }catch (RuntimeException exception){
+            throw new RuntimeException(getTypeName() + " with username " + username + " not found.");
+        }
+
+    }
+
+
+    public Optional<T> selectByUsername(String username, String password, String checkedName) {
+        if (!authenticate(username, password)) {
+            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
+        }
+        try {
+            return getDao().getByUserName(checkedName);
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to find " + getTypeName() + " with username " + username);
         }

@@ -19,13 +19,23 @@ public class Trainee extends User {
     private String address;
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Training> trainings = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name="TRAINEE_TRAINER",
+            joinColumns=@JoinColumn(name="TRAINEE_ID"),
+            inverseJoinColumns=@JoinColumn(name="TRAINER_ID"))
+    private List<Trainer> trainers;
 
-    public Trainee(){}
+    public Trainee(){
+        trainers = new ArrayList<>();
+        trainings = new ArrayList<>();
+    }
 
     public Trainee(String firstName, String lastName, String userName, String password, boolean isActive, LocalDate date, String address){
         super(firstName, lastName, userName, password, isActive);
         this.dateOfBirth = date;
         this.address = address;
+        trainers = new ArrayList<>();
+        trainings = new ArrayList<>();
     }
 
 
@@ -51,6 +61,34 @@ public class Trainee extends User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public List<Trainer> getTrainers() {
+        return trainers;
+    }
+
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers = trainers;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void addTrainer(Trainer trainer) {
+        if (!trainers.contains(trainer)) {
+            trainers.add(trainer);
+            trainer.getTrainees().add(this);
+        }
+    }
+
+    public void removeTrainer(Trainer trainer) {
+        trainers.remove(trainer);
+        trainer.getTrainees().remove(this);
     }
 
     @Override
