@@ -119,15 +119,17 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
                     ()->new RuntimeException("Not found trainee with username: " + username)
             );
             training.setTrainer(trainer);
+            training.setTrainee(trainee);
             training.setTrainingName(trainingName);
             training.setTrainingType(trainingType);
             training.setTrainingDate(date);
             training.setDuration(duration);
+            training = trainingJpaDao.save(training);
 
             trainee.addTraining(training);
             traineeJpaDao.save(trainee);
 
-            return trainingJpaDao.save(training);
+            return training;
         }catch (RuntimeException e){
             throw new RuntimeException("Error with adding new training", e);
         }
