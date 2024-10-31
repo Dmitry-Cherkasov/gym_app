@@ -76,7 +76,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
     }
 
     @Override
-    protected Trainee updateUser(Trainee trainee, String[] updates) {
+    public Trainee updateUser(Trainee trainee, String[] updates) {
         Trainee updated = TraineeUpdater.updateTrainee(trainee, updates);
         try {
             traineeJpaDao.update(trainee, updated);

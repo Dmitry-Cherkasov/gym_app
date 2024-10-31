@@ -1,14 +1,18 @@
 package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
+import com.gym_app.core.dao.UserJpaDao;
 import com.gym_app.core.dto.User;
 import com.gym_app.core.util.PasswordGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 public abstract class AbstractDbService<T extends User> {
 
     protected abstract JpaDao<T, Long> getDao();
+    @Autowired
+    private UserJpaDao userJpaDao;
 
     // New abstract method to get the type name
     protected abstract String getTypeName();
@@ -36,27 +40,28 @@ public abstract class AbstractDbService<T extends User> {
     }
 
 
-    public Optional<T> selectByUsername(String username, String password, String checkedName) {
+    public Optional<T> selectByUsername(String username, String password) {
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
         }
         try {
-            return getDao().getByUserName(checkedName);
+            return getDao().getByUserName(username);
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to find " + getTypeName() + " with username " + username);
         }
     }
 
-    public void changePassword(String newPassword, String username, String password) {
+    public boolean changePassword(String newPassword, String username, String password) {
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
         }
-        Optional<T> user;
+
         try {
-            user = getDao().getByUserName(username);
-            getDao().updatePassword(user.get(), newPassword);
+            Optional<T> user = getDao().getByUserName(username);
+                getDao().updatePassword(user.get(), newPassword);
+                return true;
         } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to change password for " + getTypeName() + ": " + username);
+            throw new RuntimeException("Failed to change password for " + getTypeName() + ": " + username, e);
         }
     }
 
@@ -88,15 +93,15 @@ public abstract class AbstractDbService<T extends User> {
         String userName = baseUserName;
         int serialNumber = 1;
 
-        while (getDao().getByUserName(userName).isPresent()) {
+        while (userJpaDao.getByUserName(userName).isPresent()) {
             userName = baseUserName + serialNumber;
             serialNumber++;
         }
         return userName;
     }
 
-    protected boolean authenticate(String username, String password) {
-        Optional<T> userOpt = getDao().getByUserName(username);
+    public boolean authenticate(String username, String password) {
+        Optional<User> userOpt = userJpaDao.getByUserName(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             return user.getPassword().equals(password);

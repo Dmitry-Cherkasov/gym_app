@@ -19,7 +19,6 @@ public class TraineeUpdater {
                 throw new RuntimeException("Invalid parameter with Null value.");
             }
         }
-        System.out.println("Trainee before: " + trainee);
         trainee.setFirstName(params[0]);
         trainee.setLastName(params[1]);
 //        trainee.setUserName(params[2]);

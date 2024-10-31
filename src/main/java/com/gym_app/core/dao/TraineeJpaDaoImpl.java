@@ -33,20 +33,29 @@ public class TraineeJpaDaoImpl extends JpaDao<Trainee, Long> {
 
         TypedQuery<Training> typedQuery = getEntityManager().createQuery(query, Training.class);
 
-        typedQuery.setParameter("username", username);
-        typedQuery.setParameter("fromDate", fromDate);
-        typedQuery.setParameter("toDate", toDate);
-        typedQuery.setParameter("trainerName", trainerName);
-        typedQuery.setParameter("trainingType", trainingType);
-        try {
-            System.out.println("REsult:  " + typedQuery.getResultList().toString());
-        } catch (Exception e) {
-            throw new RuntimeException("Query fails " + e, e);
+        // Conditionally set parameters only if they are not null
+        if (username != null && !username.isEmpty()) {
+            typedQuery.setParameter("username", username);
         }
+        if (fromDate != null) {
+            typedQuery.setParameter("fromDate", fromDate);
+        }
+        if (toDate != null) {
+            typedQuery.setParameter("toDate", toDate);
+        }
+        if (trainerName != null && !trainerName.isEmpty()) {
+            typedQuery.setParameter("trainerName", trainerName);
+        }
+        if (trainingType != null) {
+            typedQuery.setParameter("trainingType", trainingType);
+        }
+
         try {
-            return typedQuery.getResultList();
+            List<Training> resultList = typedQuery.getResultList();
+            System.out.println("Result: " + resultList);
+            return resultList;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to execute query: " + typedQuery, e);
+            throw new RuntimeException("Failed to execute query: " + e.getMessage(), e);
         }
 
     }

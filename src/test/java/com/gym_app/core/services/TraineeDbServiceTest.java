@@ -105,7 +105,7 @@ class TraineeDbServiceTest {
 
     @Test
     void selectByUsername_ShouldReturnTrainee_WhenAuthenticated() {
-        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
+        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
 
         assertTrue(foundTrainee.isPresent());
         assertEquals(trainee.getId(), foundTrainee.get().getId());
@@ -114,7 +114,7 @@ class TraineeDbServiceTest {
     @Test
     void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> traineeDbService.selectByUsername(trainee.getUserName(), "wrongPassword", trainee.getUserName()));
+                () -> traineeDbService.selectByUsername(trainee.getUserName(), "wrongPassword"));
 
         assertEquals("Authentication failed for trainee with username: Alice.Smith", exception.getMessage());
     }
@@ -124,7 +124,7 @@ class TraineeDbServiceTest {
         String newPassword = "newPassword123";
         traineeDbService.changePassword(newPassword, trainee.getUserName(), trainee.getPassword());
 
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
         assertTrue(updatedTrainee.isPresent());
         assertEquals(newPassword, updatedTrainee.get().getPassword()); // Ensure to verify the password hash if using hashing
     }
@@ -141,7 +141,7 @@ class TraineeDbServiceTest {
     void changeStatus_ShouldToggleTraineeStatus_WhenAuthenticated() {
         boolean initialStatus = trainee.isActive();
         traineeDbService.changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
         assertTrue(updatedTrainee.isPresent());
         assertNotEquals(initialStatus, updatedTrainee.get().isActive());
     }
@@ -159,7 +159,7 @@ class TraineeDbServiceTest {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "2024-05-05", "Tokio"}; // Modify as per Trainee fields
         traineeDbService.update(trainee, trainee.getUserName(), trainee.getPassword(), updates);
 
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword(), trainee.getUserName());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
         assertTrue(updatedTrainee.isPresent());
         assertEquals("New FirstName", updatedTrainee.get().getFirstName());
         assertEquals("New LastName", updatedTrainee.get().getLastName());
@@ -260,7 +260,7 @@ class TraineeDbServiceTest {
         assertDoesNotThrow(()->traineeDbService.addTrainerToList(username,password,trainer),
                 "");
 
-        trainee = traineeDbService.selectByUsername(username,password,username).get();
+        trainee = traineeDbService.selectByUsername(username,password).get();
         assertTrue(trainee.getTrainers().contains(trainer));
     }
 
@@ -278,7 +278,7 @@ class TraineeDbServiceTest {
         String password = trainee.getPassword();
 
         traineeDbService.addTrainerToList(username,password, trainer);
-        assertTrue(traineeDbService.selectByUsername(username,password,username).get().getTrainers().contains(trainer),
+        assertTrue(traineeDbService.selectByUsername(username,password).get().getTrainers().contains(trainer),
                 "");
 
         assertDoesNotThrow(()->traineeDbService.removeTrainerFromList(username,password,trainer),
@@ -293,7 +293,7 @@ class TraineeDbServiceTest {
         String password = trainee.getPassword();
 
         traineeDbService.addTrainerToList(username,password, trainer);
-        assertTrue(traineeDbService.selectByUsername(username,password,username).get().getTrainers().contains(trainer),
+        assertTrue(traineeDbService.selectByUsername(username,password).get().getTrainers().contains(trainer),
                 "");
     }
 

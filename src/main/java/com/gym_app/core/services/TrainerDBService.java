@@ -36,7 +36,7 @@ public class TrainerDBService extends AbstractDbService<Trainer> {
     }
 
     @Override
-    protected Trainer updateUser(Trainer trainer, String[] updates) {
+    public Trainer updateUser(Trainer trainer, String[] updates) {
         return TrainerUpdater.updateTrainer(trainer, updates);
     }
 

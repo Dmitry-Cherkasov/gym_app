@@ -7,6 +7,7 @@ import com.gym_app.core.dto.Trainee;
 import com.gym_app.core.dto.Trainer;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeDbService;
+import com.gym_app.core.services.TrainerDBService;
 import com.gym_app.core.services.TrainerService;
 import com.gym_app.core.services.TrainingService;
 import com.gym_app.core.util.*;
@@ -36,7 +37,7 @@ public class DbStartupConfiguration {
     @Autowired
     private TrainingFactory trainingFactory;
     @Autowired
-    private TrainerService trainerService;
+    private TrainerDBService trainerService;
     @Autowired
     private TraineeDbService traineeService;
     @Autowired
@@ -70,8 +71,8 @@ public class DbStartupConfiguration {
                 trainee.setUserName(trainee.getFirstName() + "." + trainee.getLastName());
                 trainee.setPassword(PasswordGenerator.createPassword(10));
                 trainee.setAddress(args[4]);
-                trainee.addTrainer(trainers.get(random.nextInt(5)));
-                trainee = traineeJpaDao.save(trainee);
+                trainee = traineeService.create(trainee);
+                traineeService.addTrainerToList(trainee.getUserName(), trainee.getPassword(), trainers.get(random.nextInt(5)));
                 trainees.add(trainee);
             }
         } catch (IOException e) {
@@ -89,7 +90,7 @@ public class DbStartupConfiguration {
                 Trainer trainer = trainerFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), TrainingType.valueOf(args[3]));
                 trainer.setUserName(trainer.getFirstName() + "." + trainer.getLastName());
                 trainer.setPassword(PasswordGenerator.createPassword(10));
-                trainer = trainerJpaDao.save(trainer);
+                trainer = trainerService.create(trainer);
                 trainers.add(trainer);
             }
         } catch (IOException e) {

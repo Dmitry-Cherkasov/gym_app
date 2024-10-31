@@ -92,7 +92,7 @@ class TrainerDBServiceTest {
 
     @Test
     void selectByUsername_ShouldReturnTrainer_WhenAuthenticated() {
-        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
+        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword());
 
         assertTrue(foundTrainer.isPresent());
         assertEquals(trainer.getId(), foundTrainer.get().getId());
@@ -101,7 +101,7 @@ class TrainerDBServiceTest {
     @Test
     void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.selectByUsername(trainer.getUserName(), "wrongPassword", trainer.getUserName()));
+                () -> trainerDBService.selectByUsername(trainer.getUserName(), "wrongPassword"));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
@@ -111,7 +111,7 @@ class TrainerDBServiceTest {
         String newPassword = "newPassword123";
         trainerDBService.changePassword(newPassword, trainer.getUserName(), trainer.getPassword());
 
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword());
         assertTrue(updatedTrainer.isPresent());
         assertEquals(newPassword, updatedTrainer.get().getPassword()); // Ensure to verify the password hash if using hashing
     }
@@ -128,7 +128,7 @@ class TrainerDBServiceTest {
     void changeStatus_ShouldToggleTrainerStatus_WhenAuthenticated() {
         boolean initialStatus = trainer.isActive();
         trainerDBService.changeStatus(trainer, trainer.getUserName(), trainer.getPassword());
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(), trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword());
         assertTrue(updatedTrainer.isPresent());
         System.out.println(trainer.isActive() + "   " + updatedTrainer.get().isActive());
         assertNotEquals(initialStatus, updatedTrainer.get().isActive());
@@ -146,7 +146,7 @@ class TrainerDBServiceTest {
     void update_ShouldUpdateTrainer_WhenAuthenticated() {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "FITNESS"};
         trainerDBService.update(trainer, trainer.getUserName(), trainer.getPassword(), updates);
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword(),trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword());
 
         assertTrue(updatedTrainer.isPresent());
         assertEquals("New FirstName", updatedTrainer.get().getFirstName());
@@ -182,5 +182,6 @@ class TrainerDBServiceTest {
                 trainee.getUserName(),
                 trainer.getSpecialization());
         assertTrue(trainings.size() > 0);
+        System.out.println("Trainings: " +trainings);
     }
 }

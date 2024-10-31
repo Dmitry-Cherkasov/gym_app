@@ -17,7 +17,7 @@ public class Trainee extends User {
     private LocalDate dateOfBirth;
     @Column(name = "ADDRESS", length = 100)
     private String address;
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<Training> trainings = new ArrayList<>();
     @ManyToMany
     @JoinTable(name="TRAINEE_TRAINER",
