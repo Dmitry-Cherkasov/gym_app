@@ -1,7 +1,7 @@
 package com.gym_app.core.services;
 
 import com.gym_app.core.CoreApplication;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.repo.TrainingRepository;
 import com.gym_app.core.util.TrainingFactory;
 import org.junit.jupiter.api.BeforeEach;

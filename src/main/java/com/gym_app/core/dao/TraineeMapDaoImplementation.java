@@ -1,6 +1,6 @@
 package com.gym_app.core.dao;
 
-import com.gym_app.core.dto.Trainee;
+import com.gym_app.core.dto.common.Trainee;
 import com.gym_app.core.repo.TraineeRepository;
 import com.gym_app.core.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;

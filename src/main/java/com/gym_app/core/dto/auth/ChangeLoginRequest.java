@@ -1,9 +1,17 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.auth;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class ChangeLoginRequest {
+    @NotNull(message = "User name cannot be null")
     private String userName;
+    @NotNull(message = "Password cannot be null")
     private String oldPassword;
+    @NotNull(message = "New password cannot be null")
+    @Size (min = 10, max = 20, message = "Password must be between 10 and 20 characters")
     private String newPassword;
+    @NotNull(message = "User type must be defined")
     private boolean isTrainee;
 
     public String getUserName() {

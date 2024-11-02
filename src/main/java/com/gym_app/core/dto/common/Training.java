@@ -1,4 +1,4 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.common;
 
 import com.gym_app.core.enums.TrainingType;
 import jakarta.persistence.*;

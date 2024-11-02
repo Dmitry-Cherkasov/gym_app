@@ -1,6 +1,6 @@
 package com.gym_app.core.dao;
 
-import com.gym_app.core.dto.User;
+import com.gym_app.core.dto.common.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;

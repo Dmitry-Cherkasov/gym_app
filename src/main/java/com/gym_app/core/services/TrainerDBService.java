@@ -2,8 +2,8 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dao.TrainerJpaDaoImpl;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TrainerUpdater;
 import org.springframework.beans.factory.annotation.Autowired;

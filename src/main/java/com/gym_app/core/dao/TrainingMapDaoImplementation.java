@@ -1,7 +1,7 @@
 package com.gym_app.core.dao;
 
 
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Training;
 
 import com.gym_app.core.repo.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;

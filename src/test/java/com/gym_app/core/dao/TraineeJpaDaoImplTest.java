@@ -1,7 +1,7 @@
 package com.gym_app.core.dao;
 
 import com.gym_app.core.CoreApplication;
-import com.gym_app.core.dto.Trainee;
+import com.gym_app.core.dto.common.Trainee;
 import com.gym_app.core.util.PasswordGenerator;
 import com.gym_app.core.util.TraineeFactory;
 import org.junit.jupiter.api.AfterEach;

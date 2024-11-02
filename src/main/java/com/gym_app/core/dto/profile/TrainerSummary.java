@@ -1,9 +1,10 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.profile;
 
-public class TraineeSummary {
+public class TrainerSummary {
     private String username;
     private String firstName;
     private String lastName;
+    private String specialization;
 
     public String getUsername() {
         return username;
@@ -27,5 +28,13 @@ public class TraineeSummary {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }

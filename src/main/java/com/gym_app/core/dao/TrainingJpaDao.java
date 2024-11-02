@@ -1,6 +1,6 @@
 package com.gym_app.core.dao;
 
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Training;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;

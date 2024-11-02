@@ -2,9 +2,9 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dao.TrainingJpaDao;
-import com.gym_app.core.dto.Trainee;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.Trainee;
+import com.gym_app.core.dto.common.Trainee;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

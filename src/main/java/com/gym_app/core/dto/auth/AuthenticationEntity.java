@@ -1,4 +1,4 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.auth;
 
 public class AuthenticationEntity {
     private String userName;

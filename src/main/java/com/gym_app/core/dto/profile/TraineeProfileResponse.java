@@ -1,8 +1,11 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.profile;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TraineeProfileResponse {
     private String userName;
     private String firstName;

@@ -1,12 +1,19 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.traininig;
+
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public class TrainingCreateRequest {
+    @NotNull(message = "Trainee user name cannot be null")
     private String traineeUsername;
+    @NotNull(message = "Trainer user name cannot be null")
     private String trainerUsername;
+    @NotNull(message = "Training name cannot be null")
     private String trainingName;
+    @NotNull(message = "Training date cannot be null")
     private LocalDate trainingDate;
+    @NotNull(message = "Training duration cannot be null")
     private int trainingDuration;
 
     public String getTraineeUsername() {

@@ -1,6 +1,6 @@
 package com.gym_app.core.configuration;
 
-import com.gym_app.core.dto.AuthenticationEntity;
+import com.gym_app.core.dto.auth.AuthenticationEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

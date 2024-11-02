@@ -3,7 +3,7 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.Dao;
 import com.gym_app.core.dao.TraineeMapDaoImplementation;
-import com.gym_app.core.dto.Trainee;
+import com.gym_app.core.dto.common.Trainee;
 import com.gym_app.core.util.TraineeUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

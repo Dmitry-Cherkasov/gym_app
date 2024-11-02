@@ -1,6 +1,6 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 
 import java.time.LocalDate;

@@ -1,6 +1,6 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.Trainer;
+import com.gym_app.core.dto.common.Trainer;
 import com.gym_app.core.enums.TrainingType;
 import org.springframework.stereotype.Component;
 

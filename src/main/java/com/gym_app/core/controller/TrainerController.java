@@ -1,10 +1,23 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.*;
+import com.gym_app.core.dto.auth.AuthenticationEntity;
+import com.gym_app.core.dto.auth.RegistrationRequest;
+import com.gym_app.core.dto.auth.TrainerRegistrationRequest;
+import com.gym_app.core.dto.common.ToggleActiveRequest;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
+import com.gym_app.core.dto.profile.TraineeSummary;
+import com.gym_app.core.dto.profile.TrainerProfileResponse;
+import com.gym_app.core.dto.profile.TrainerProfileUpdateRequest;
+import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.services.TrainerDBService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,6 +29,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/trainer")
+@Validated
 public class TrainerController {
     @Autowired
     AuthenticationEntity login;
@@ -27,7 +41,10 @@ public class TrainerController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> registerTrainer(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<Map<String, String>> registerTrainer(
+            @Valid
+            @RequestBody
+            TrainerRegistrationRequest request) {
         Map<String, String> response = new HashMap<>();
         Trainer trainer = new Trainer(
                 request.getFirstName(),
@@ -51,7 +68,11 @@ public class TrainerController {
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<TrainerProfileResponse> getTraineeProfile(@PathVariable String username) {
+    public ResponseEntity<TrainerProfileResponse> getTraineeProfile(
+            @PathVariable
+            @NotBlank(message = "Username is required")
+            String username) {
+
         Optional<Trainer> trainerOptional = trainerDBService.selectByUsername(username, login.getPassword());
         if (trainerOptional.isPresent()) {
             Trainer trainer = trainerOptional.get();
@@ -63,7 +84,7 @@ public class TrainerController {
     }
 
     @PutMapping
-    public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(@RequestBody TrainerProfileUpdateRequest request) {
+    public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(@Valid @RequestBody TrainerProfileUpdateRequest request) {
         Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(login.getUserName(), login.getPassword());
         if (trainerOpt.isPresent()) {
             Trainer oldTrainer = trainerOpt.get();
@@ -85,7 +106,7 @@ public class TrainerController {
 
     @GetMapping(value = "/trainings")
     public ResponseEntity<List<TrainingInfo>> getTrainingsList(
-            @RequestParam String username,
+            @RequestParam @NotNull @NotBlank String username,
             @RequestParam(required = false) LocalDate periodFrom,
             @RequestParam(required = false) LocalDate periodTo,
             @RequestParam(required = false) String traineeName) {
@@ -122,7 +143,7 @@ public class TrainerController {
     }
 
     @PatchMapping(value = "/status")
-    public ResponseEntity<String> toggleActiveStatus(@RequestBody ToggleActiveRequest request) {
+    public ResponseEntity<String> toggleActiveStatus(@Valid @RequestBody ToggleActiveRequest request) {
         Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(request.getUsername(), login.getPassword());
 
         if (trainerOpt.isEmpty()) {

@@ -1,14 +1,19 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.profile;
 
-import java.time.LocalDate;
+import com.gym_app.core.enums.TrainingType;
+import jakarta.validation.constraints.NotNull;
 
-public class TraineeProfileUpdateRequest {
+
+public class TrainerProfileUpdateRequest {
+    @NotNull(message = "User name cannot be null")
     private String userName;
+    @NotNull (message = "First name cannot be null")
     private String firstName;
+    @NotNull (message = "Last name cannot be null")
     private String lastName;
-    private LocalDate dateOfBirth;
+    private TrainingType specialization;
+    @NotNull (message = "Active status cannot be null")
     private boolean isActive;
-    private String address;
 
     public String getUserName() {
         return userName;
@@ -34,12 +39,12 @@ public class TraineeProfileUpdateRequest {
         this.lastName = lastName;
     }
 
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
+    public TrainingType getSpecialization() {
+        return specialization;
     }
 
-    public void setDateOfBirth(LocalDate birthDate) {
-        this.dateOfBirth = birthDate;
+    public void setSpecialization(TrainingType specialization) {
+        this.specialization = specialization;
     }
 
     public boolean getIsActive() {
@@ -48,13 +53,5 @@ public class TraineeProfileUpdateRequest {
 
     public void setIsActive(boolean active) {
         this.isActive = active;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 }

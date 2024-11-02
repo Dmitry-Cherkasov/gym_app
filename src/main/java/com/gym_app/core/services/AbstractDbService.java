@@ -2,7 +2,7 @@ package com.gym_app.core.services;
 
 import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dao.UserJpaDao;
-import com.gym_app.core.dto.User;
+import com.gym_app.core.dto.common.User;
 import com.gym_app.core.util.PasswordGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 

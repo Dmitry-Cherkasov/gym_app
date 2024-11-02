@@ -1,8 +1,8 @@
 package com.gym_app.core.configuration;
 
-import com.gym_app.core.dto.Trainee;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeService;
 import com.gym_app.core.services.TrainerService;
@@ -14,7 +14,6 @@ import com.gym_app.core.util.TrainingFactory;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 import java.time.LocalDate;

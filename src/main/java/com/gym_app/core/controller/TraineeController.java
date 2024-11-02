@@ -1,13 +1,29 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.*;
+import com.gym_app.core.dto.auth.AuthenticationEntity;
+import com.gym_app.core.dto.auth.TraineeRegistrationRequest;
+import com.gym_app.core.dto.common.ToggleActiveRequest;
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
+import com.gym_app.core.dto.profile.TraineeProfileResponse;
+import com.gym_app.core.dto.profile.TraineeProfileUpdateRequest;
+import com.gym_app.core.dto.profile.TrainerSummary;
+import com.gym_app.core.dto.profile.TrainersListUpdateRequest;
+import com.gym_app.core.dto.traininig.TrainingCreateRequest;
+import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
 import com.gym_app.core.util.TrainerSummaryMapper;
+import io.swagger.annotations.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -16,6 +32,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/trainee")
+@Validated
+@Api(value = "Trainee Management System", tags = "Trainees")
 public class TraineeController {
     @Autowired
     AuthenticationEntity login;
@@ -29,7 +47,17 @@ public class TraineeController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> registerTrainee(@RequestBody RegistrationRequest request) {
+    @ApiOperation(value = "Register a new Trainee", notes = "Creates a new trainee with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Trainee successfully registered"),
+            @ApiResponse(code = 400, message = "Bad Request - Invalid input")
+    })
+    public ResponseEntity<Map<String, String>> registerTrainee(
+            @ApiParam(value = "Trainee request body", required = true)
+            @Valid
+            @RequestBody
+            TraineeRegistrationRequest request) {
+
         Map<String, String> response = new HashMap<>();
 
         Trainee trainee = new Trainee(
@@ -55,8 +83,17 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<TraineeProfileResponse> getTraineeProfile(@PathVariable String username) {
-        System.err.println(login.getPassword());
+    @ApiOperation(value = "Get Trainee Profile", notes = "Fetches the profile of a specific trainee by username")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully fetched trainee profile"),
+            @ApiResponse(code = 404, message = "Trainee not found")
+    })
+    public ResponseEntity<TraineeProfileResponse> getTraineeProfile(
+            @PathVariable
+            @ApiParam(value = "Username of the trainee", required = true)
+            @NotBlank(message = "Username is required")
+            String username) {
+
         Optional<Trainee> traineeOptional = traineeService.selectByUsername(username, login.getPassword()); //needs password from session context
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
@@ -69,7 +106,12 @@ public class TraineeController {
     }
 
     @PutMapping
-    public ResponseEntity<TraineeProfileResponse> updateTraineeProfile(@RequestBody TraineeProfileUpdateRequest request) {
+    @ApiOperation(value = "Update Trainee Profile", notes = "Updates the profile of the logged-in trainee")
+    public ResponseEntity<TraineeProfileResponse> updateTraineeProfile(
+            @ApiParam(value = "Trainee profile update request body", required = true)
+            @Valid @RequestBody
+            TraineeProfileUpdateRequest request) {
+
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(login.getUserName(), login.getPassword());
         if (traineeOpt.isPresent()) {
             Trainee oldTrainee = traineeOpt.get();
@@ -86,13 +128,22 @@ public class TraineeController {
             Trainee updatedTrainee = traineeService.selectByUsername(oldTrainee.getUserName(), oldTrainee.getPassword()).get();
             TraineeProfileResponse response = mapTraineeToResponse(updatedTrainee);
             response.setUserName(updatedTrainee.getUserName());
+            response.setUserName(updatedTrainee.getUserName());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<Void> deleteTraineeProfile(@PathVariable String username) {
+    @ApiOperation(value = "Delete Trainee Profile", notes = "Deletes a trainee profile by username")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Trainee profile successfully deleted"),
+            @ApiResponse(code = 404, message = "Trainee not found")
+    })
+    public ResponseEntity<Void> deleteTraineeProfile(
+            @ApiParam(value = "Username of the trainee to be deleted", required = true)
+            @NotBlank(message = "Username is required") @PathVariable String username) {
+
         boolean isDeleted = traineeService.delete(username, login.getPassword());
         if (isDeleted) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -102,7 +153,11 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/{username}/trainers")
-    public ResponseEntity<List<TrainerSummary>> getAvailableTrainers(@PathVariable String username) {
+    @ApiOperation(value = "Get Available Trainers", notes = "Fetches a list of trainers available for the specified trainee")
+    public ResponseEntity<List<TrainerSummary>> getAvailableTrainers(
+            @ApiParam(value = "Username of the trainee", required = true)
+            @NotBlank(message = "Username is required") @PathVariable String username) {
+
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
         if (traineeOpt.isPresent()) {
             List<TrainerSummary> trainers = traineeService.
@@ -119,8 +174,10 @@ public class TraineeController {
     }
 
     @PutMapping("/trainers")
+    @ApiOperation(value = "Update Trainee's Trainers List", notes = "Updates the list of trainers assigned to a trainee")
     public ResponseEntity<List<TrainerSummary>> updateTraineeTrainerList(
-            @RequestBody TrainersListUpdateRequest request) {
+            @ApiParam(value = "Trainee's trainers list update request", required = true)
+            @Valid @RequestBody TrainersListUpdateRequest request) {
 
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
         if (traineeOpt.isEmpty()) {
@@ -148,11 +205,17 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/trainings")
+    @ApiOperation(value = "Get Trainee Trainings", notes = "Retrieves a list of trainings based on filter criteria")
     public ResponseEntity<List<TrainingInfo>> getTrainingsList(
-            @RequestParam String username,
+            @ApiParam(value = "Trainee's username", required = true)
+            @RequestParam @NotNull String username,
+            @ApiParam(value = "Start date filter", required = false)
             @RequestParam(required = false) LocalDate periodFrom,
+            @ApiParam(value = "End date filter", required = false)
             @RequestParam(required = false) LocalDate periodTo,
+            @ApiParam(value = "Trainer's name filter", required = false)
             @RequestParam(required = false) String trainerName,
+            @ApiParam(value = "Training type filter", required = false)
             @RequestParam(required = false) TrainingType trainingType) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
         if (traineeOpt.isEmpty()) {
@@ -183,7 +246,7 @@ public class TraineeController {
     }
 
     @PostMapping(value = "/trainings")
-    public ResponseEntity<String> addTraining(@RequestBody TrainingCreateRequest request) {
+    public ResponseEntity<String> addTraining(@Valid @RequestBody TrainingCreateRequest request) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
         Optional<Trainer> trainerOpt = traineeService.
                 getAvailableTrainers(request.getTraineeUsername(), login.getPassword()).
@@ -214,7 +277,7 @@ public class TraineeController {
     }
 
     @PatchMapping(value = "/status")
-    public ResponseEntity<String> toggleActiveStatus(@RequestBody ToggleActiveRequest request) {
+    public ResponseEntity<String> toggleActiveStatus(@Valid @RequestBody ToggleActiveRequest request) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUsername(), login.getPassword());
 
         if (traineeOpt.isEmpty()) {
@@ -244,7 +307,6 @@ public class TraineeController {
     private TraineeProfileResponse mapTraineeToResponse(Trainee trainee) {
 
         TraineeProfileResponse response = new TraineeProfileResponse();
-        response.setUserName(trainee.getUserName());
         response.setFirstName(trainee.getFirstName());
         response.setLastName(trainee.getLastName());
         response.setDateOfBirth(trainee.getDateOfBirth());

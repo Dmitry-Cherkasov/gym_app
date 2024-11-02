@@ -1,7 +1,7 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.TrainerSummary;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.profile.TrainerSummary;
 
 public class TrainerSummaryMapper {
 

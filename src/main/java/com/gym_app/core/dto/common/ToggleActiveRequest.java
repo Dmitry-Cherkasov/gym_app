@@ -1,7 +1,11 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.common;
+
+import jakarta.validation.constraints.NotNull;
 
 public class ToggleActiveRequest {
+    @NotNull(message = "User name cannot be null")
     private String username;
+    @NotNull (message = "Active status cannot be null")
     private Boolean isActive;
 
     // Getters and setters

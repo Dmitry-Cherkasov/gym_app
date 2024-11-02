@@ -1,8 +1,8 @@
 package com.gym_app.core.dao;
 
-import com.gym_app.core.dto.Trainee;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;

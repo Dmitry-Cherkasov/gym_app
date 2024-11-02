@@ -1,4 +1,4 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.traininig;
 
 import java.time.LocalDate;
 

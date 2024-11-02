@@ -1,9 +1,9 @@
 package com.gym_app.core.dao;
 
 import com.gym_app.core.CoreApplication;
-import com.gym_app.core.dto.Trainee;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TraineeFactory;
 import com.gym_app.core.util.TrainerFactory;

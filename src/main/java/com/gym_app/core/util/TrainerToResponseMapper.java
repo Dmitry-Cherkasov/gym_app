@@ -1,8 +1,8 @@
 package com.gym_app.core.util;
 
-import com.gym_app.core.dto.TraineeSummary;
-import com.gym_app.core.dto.Trainer;
-import com.gym_app.core.dto.TrainerProfileResponse;
+import com.gym_app.core.dto.profile.TraineeSummary;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.profile.TrainerProfileResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;

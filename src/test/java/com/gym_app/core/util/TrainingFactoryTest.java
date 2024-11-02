@@ -1,7 +1,7 @@
 package com.gym_app.core.util;
 
 import com.gym_app.core.CoreApplication;
-import com.gym_app.core.dto.Training;
+import com.gym_app.core.dto.common.Training;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

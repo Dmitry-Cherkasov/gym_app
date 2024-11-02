@@ -1,18 +1,22 @@
 package com.gym_app.core.controller;
 
 
-import com.gym_app.core.dto.AuthenticationEntity;
-import com.gym_app.core.dto.ChangeLoginRequest;
+import com.gym_app.core.dto.auth.AuthenticationEntity;
+import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping(value = "/login")
+@Validated
 public class LoginController {
     @Autowired
     private AuthenticationEntity authenticationEntity;
@@ -27,7 +31,10 @@ public class LoginController {
 
     @GetMapping
     public ResponseEntity<Void> login(
-            @RequestParam String userName,
+            @RequestParam
+            @NotBlank(message = "Username is required")
+            String userName,
+            @NotBlank(message = "Password is required")
             @RequestParam String password) {
 
         if (trainerService.authenticate(userName, password) || traineeService.authenticate(userName, password)) {
@@ -40,7 +47,7 @@ public class LoginController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> changePassword(@RequestBody ChangeLoginRequest request) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangeLoginRequest request) {
         String userName = request.getUserName();
         String oldPassword = request.getOldPassword();
         String newPassword = request.getNewPassword();

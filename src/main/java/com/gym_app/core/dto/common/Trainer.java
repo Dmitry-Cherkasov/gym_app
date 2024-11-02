@@ -1,4 +1,4 @@
-package com.gym_app.core.dto;
+package com.gym_app.core.dto.common;
 
 import com.gym_app.core.enums.TrainingType;
 import jakarta.persistence.*;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "TRAINER")
-public class Trainer extends User{
+public class Trainer extends User {
     @PrimaryKeyJoinColumn(name = "TRAINER_ID")
     @OneToOne
     private User user;
@@ -17,7 +17,7 @@ public class Trainer extends User{
     @Enumerated(EnumType.STRING)
     private TrainingType specialization;
     @OneToMany(mappedBy = "trainer", fetch = FetchType.LAZY)
-    private List<Training> trainings = new ArrayList<>();
+    private List<Training> trainings;
     @ManyToMany(mappedBy = "trainers")
     private List<Trainee> trainees;
 

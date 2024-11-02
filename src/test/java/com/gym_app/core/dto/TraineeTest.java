@@ -1,5 +1,8 @@
 package com.gym_app.core.dto;
 
+import com.gym_app.core.dto.common.Trainee;
+import com.gym_app.core.dto.common.Trainer;
+import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TrainingFactory;
 import org.junit.jupiter.api.BeforeEach;
