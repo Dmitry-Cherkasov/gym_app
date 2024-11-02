@@ -5,6 +5,10 @@ import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +33,19 @@ public class LoginController {
         trainerService = trainerDBService;
     }
 
+    @Operation(summary = "Login", description = "User system login")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User authenticated"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "401", description = "User authentication failed")
+    })
     @GetMapping
     public ResponseEntity<Void> login(
+            @Parameter(description = "User name", required = true)
             @RequestParam
             @NotBlank(message = "Username is required")
             String userName,
+            @Parameter(description = "Password", required = true)
             @NotBlank(message = "Password is required")
             @RequestParam String password) {
 
@@ -46,8 +58,16 @@ public class LoginController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @Operation(summary = "Change login", description = "Changes user's password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
+            @ApiResponse(responseCode = "401", description = "User authentication failed")
+    })
     @PutMapping
-    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangeLoginRequest request) {
+    public ResponseEntity<Void> changePassword(
+            @Parameter(description = "Password change request body", required = true)
+            @Valid @RequestBody ChangeLoginRequest request) {
         String userName = request.getUserName();
         String oldPassword = request.getOldPassword();
         String newPassword = request.getNewPassword();

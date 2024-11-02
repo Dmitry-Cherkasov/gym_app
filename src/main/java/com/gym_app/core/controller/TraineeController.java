@@ -16,7 +16,11 @@ import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
 import com.gym_app.core.util.TrainerSummaryMapper;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +37,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/trainee")
 @Validated
-@Api(value = "Trainee Management System", tags = "Trainees")
+@Tag(description = "Trainee Management System", name = "Trainees")
 public class TraineeController {
     @Autowired
     AuthenticationEntity login;
@@ -47,13 +51,13 @@ public class TraineeController {
     }
 
     @PostMapping
-    @ApiOperation(value = "Register a new Trainee", notes = "Creates a new trainee with the provided details")
+    @Operation( summary= "Register a new Trainee", description = "Creates a new trainee with the provided details")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Trainee successfully registered"),
-            @ApiResponse(code = 400, message = "Bad Request - Invalid input")
+            @ApiResponse(responseCode = "200", description = "Trainee successfully registered"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")
     })
     public ResponseEntity<Map<String, String>> registerTrainee(
-            @ApiParam(value = "Trainee request body", required = true)
+            @Parameter(description = "Trainee request body", required = true)
             @Valid
             @RequestBody
             TraineeRegistrationRequest request) {
@@ -83,14 +87,14 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/{username}")
-    @ApiOperation(value = "Get Trainee Profile", notes = "Fetches the profile of a specific trainee by username")
+    @Operation(summary = "Get Trainee Profile", description = "Fetches the profile of a specific trainee by username")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully fetched trainee profile"),
-            @ApiResponse(code = 404, message = "Trainee not found")
+            @ApiResponse(responseCode = "200", description = "Successfully fetched trainee profile"),
+            @ApiResponse(responseCode = "404", description = "Trainee not found")
     })
     public ResponseEntity<TraineeProfileResponse> getTraineeProfile(
             @PathVariable
-            @ApiParam(value = "Username of the trainee", required = true)
+            @Parameter(description = "Username of the trainee", required = true)
             @NotBlank(message = "Username is required")
             String username) {
 
@@ -106,9 +110,9 @@ public class TraineeController {
     }
 
     @PutMapping
-    @ApiOperation(value = "Update Trainee Profile", notes = "Updates the profile of the logged-in trainee")
+    @Operation(summary = "Update Trainee Profile", description = "Updates the profile of the logged-in trainee")
     public ResponseEntity<TraineeProfileResponse> updateTraineeProfile(
-            @ApiParam(value = "Trainee profile update request body", required = true)
+            @Parameter(description = "Trainee profile update request body", required = true)
             @Valid @RequestBody
             TraineeProfileUpdateRequest request) {
 
@@ -135,13 +139,13 @@ public class TraineeController {
     }
 
     @DeleteMapping("/{username}")
-    @ApiOperation(value = "Delete Trainee Profile", notes = "Deletes a trainee profile by username")
+    @Operation(summary = "Delete Trainee Profile", description = "Deletes a trainee profile by username")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Trainee profile successfully deleted"),
-            @ApiResponse(code = 404, message = "Trainee not found")
+            @ApiResponse(responseCode = "200", description = "Trainee profile successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Trainee not found")
     })
     public ResponseEntity<Void> deleteTraineeProfile(
-            @ApiParam(value = "Username of the trainee to be deleted", required = true)
+            @Parameter(description = "Username of the trainee to be deleted", required = true)
             @NotBlank(message = "Username is required") @PathVariable String username) {
 
         boolean isDeleted = traineeService.delete(username, login.getPassword());
@@ -153,9 +157,9 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/{username}/trainers")
-    @ApiOperation(value = "Get Available Trainers", notes = "Fetches a list of trainers available for the specified trainee")
+    @Operation(summary = "Get Available Trainers", description = "Fetches a list of trainers available for the specified trainee")
     public ResponseEntity<List<TrainerSummary>> getAvailableTrainers(
-            @ApiParam(value = "Username of the trainee", required = true)
+            @Parameter(description = "Username of the trainee", required = true)
             @NotBlank(message = "Username is required") @PathVariable String username) {
 
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
@@ -174,9 +178,9 @@ public class TraineeController {
     }
 
     @PutMapping("/trainers")
-    @ApiOperation(value = "Update Trainee's Trainers List", notes = "Updates the list of trainers assigned to a trainee")
+    @Operation(summary = "Update Trainee's Trainers List", description = "Updates the list of trainers assigned to a trainee")
     public ResponseEntity<List<TrainerSummary>> updateTraineeTrainerList(
-            @ApiParam(value = "Trainee's trainers list update request", required = true)
+            @Parameter(description = "Trainee's trainers list update request", required = true)
             @Valid @RequestBody TrainersListUpdateRequest request) {
 
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
@@ -205,17 +209,17 @@ public class TraineeController {
     }
 
     @GetMapping(value = "/trainings")
-    @ApiOperation(value = "Get Trainee Trainings", notes = "Retrieves a list of trainings based on filter criteria")
+    @Operation(summary = "Get trainee trainings list", description = "Retrieves a list of trainings based on filter criteria")
     public ResponseEntity<List<TrainingInfo>> getTrainingsList(
-            @ApiParam(value = "Trainee's username", required = true)
+            @Parameter(description = "Trainee's username", required = true)
             @RequestParam @NotNull String username,
-            @ApiParam(value = "Start date filter", required = false)
+            @Parameter(description = "Start date filter", required = false)
             @RequestParam(required = false) LocalDate periodFrom,
-            @ApiParam(value = "End date filter", required = false)
+            @Parameter(description = "End date filter", required = false)
             @RequestParam(required = false) LocalDate periodTo,
-            @ApiParam(value = "Trainer's name filter", required = false)
+            @Parameter(description = "Trainer's name filter", required = false)
             @RequestParam(required = false) String trainerName,
-            @ApiParam(value = "Training type filter", required = false)
+            @Parameter(description = "Training type filter", required = false)
             @RequestParam(required = false) TrainingType trainingType) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
         if (traineeOpt.isEmpty()) {
@@ -246,7 +250,13 @@ public class TraineeController {
     }
 
     @PostMapping(value = "/trainings")
-    public ResponseEntity<String> addTraining(@Valid @RequestBody TrainingCreateRequest request) {
+    @Operation(summary = "Add a new training", description = "Creates a new training session for a trainee with the specified trainer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Training successfully added"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")})
+    public ResponseEntity<String> addTraining(
+            @Parameter(description = "Training request body", required = true)
+            @Valid @RequestBody TrainingCreateRequest request) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
         Optional<Trainer> trainerOpt = traineeService.
                 getAvailableTrainers(request.getTraineeUsername(), login.getPassword()).
@@ -276,8 +286,14 @@ public class TraineeController {
         }
     }
 
+    @Operation(summary = "Activate/De-Activate Trainee", description = "Changes trainee's active status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Active status changed"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")})
     @PatchMapping(value = "/status")
-    public ResponseEntity<String> toggleActiveStatus(@Valid @RequestBody ToggleActiveRequest request) {
+    public ResponseEntity<String> toggleActiveStatus(
+            @Parameter(description = "Trainee active status request body", required = true)
+            @Valid @RequestBody ToggleActiveRequest request) {
         Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUsername(), login.getPassword());
 
         if (traineeOpt.isEmpty()) {
@@ -296,6 +312,10 @@ public class TraineeController {
         }
     }
 
+    @Operation(summary = "Get training types", description = "Lists all available training types ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400")})
     @GetMapping(value = "/training-types")
     public ResponseEntity<Map<String, TrainingType>> getTrainingTypes() {
         Map<String, TrainingType> response = new HashMap<>();

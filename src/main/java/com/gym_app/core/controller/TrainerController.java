@@ -1,7 +1,6 @@
 package com.gym_app.core.controller;
 
 import com.gym_app.core.dto.auth.AuthenticationEntity;
-import com.gym_app.core.dto.auth.RegistrationRequest;
 import com.gym_app.core.dto.auth.TrainerRegistrationRequest;
 import com.gym_app.core.dto.common.ToggleActiveRequest;
 import com.gym_app.core.dto.common.Trainer;
@@ -11,6 +10,11 @@ import com.gym_app.core.dto.profile.TrainerProfileResponse;
 import com.gym_app.core.dto.profile.TrainerProfileUpdateRequest;
 import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.services.TrainerDBService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/trainer")
 @Validated
+@Tag(description = "Trainer Management System", name = "Trainers")
 public class TrainerController {
     @Autowired
     AuthenticationEntity login;
@@ -39,11 +44,15 @@ public class TrainerController {
     public TrainerController(TrainerDBService trainerDBService) {
         this.trainerDBService = trainerDBService;
     }
-
+    @Operation( summary= "Register a new Trainer", description = "Creates a new trainer with the provided details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Trainer successfully registered"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")
+    })
     @PostMapping
     public ResponseEntity<Map<String, String>> registerTrainer(
-            @Valid
-            @RequestBody
+            @Parameter(description = "New trainer request body", required = true)
+            @Valid @RequestBody
             TrainerRegistrationRequest request) {
         Map<String, String> response = new HashMap<>();
         Trainer trainer = new Trainer(
@@ -67,10 +76,15 @@ public class TrainerController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "Get Trainer Profile", description = "Fetches the profile of a specific trainer by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully fetched trainer profile"),
+            @ApiResponse(responseCode = "404", description = "Trainer not found")
+    })
     @GetMapping(value = "/{username}")
     public ResponseEntity<TrainerProfileResponse> getTraineeProfile(
-            @PathVariable
-            @NotBlank(message = "Username is required")
+            @Parameter(description = "Trainee user name", required = true)
+            @PathVariable @NotBlank(message = "Username is required")
             String username) {
 
         Optional<Trainer> trainerOptional = trainerDBService.selectByUsername(username, login.getPassword());
@@ -83,8 +97,11 @@ public class TrainerController {
         }
     }
 
+    @Operation(summary = "Update Trainer Profile", description = "Updates the profile of the logged-in trainer")
     @PutMapping
-    public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(@Valid @RequestBody TrainerProfileUpdateRequest request) {
+    public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(
+            @Parameter(description = "Trainer profile update request body", required = true)
+            @Valid @RequestBody TrainerProfileUpdateRequest request) {
         Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(login.getUserName(), login.getPassword());
         if (trainerOpt.isPresent()) {
             Trainer oldTrainer = trainerOpt.get();
@@ -104,11 +121,17 @@ public class TrainerController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+
+    @Operation(summary = "Get trainer trainings list", description = "Retrieves a list of trainings based on filter criteria")
     @GetMapping(value = "/trainings")
     public ResponseEntity<List<TrainingInfo>> getTrainingsList(
+            @Parameter(description = "Trainer's username", required = true)
             @RequestParam @NotNull @NotBlank String username,
+            @Parameter(description = "Start date filter", required = false)
             @RequestParam(required = false) LocalDate periodFrom,
+            @Parameter(description = "End date filter", required = false)
             @RequestParam(required = false) LocalDate periodTo,
+            @Parameter(description = "Trainee's name filter", required = false)
             @RequestParam(required = false) String traineeName) {
         Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(username, login.getPassword());
         if (trainerOpt.isEmpty()) {
@@ -142,8 +165,14 @@ public class TrainerController {
         }
     }
 
+    @Operation(summary = "Activate/De-Activate Trainer", description = "Changes trainer's active status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Active status changed"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")})
     @PatchMapping(value = "/status")
-    public ResponseEntity<String> toggleActiveStatus(@Valid @RequestBody ToggleActiveRequest request) {
+    public ResponseEntity<String> toggleActiveStatus(
+            @Parameter(description = "Trainer active status request body", required = true)
+            @Valid @RequestBody ToggleActiveRequest request) {
         Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(request.getUsername(), login.getPassword());
 
         if (trainerOpt.isEmpty()) {
