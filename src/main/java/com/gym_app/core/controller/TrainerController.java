@@ -70,7 +70,7 @@ public class TrainerController {
             response.put("error", "Failed to register trainer: " + exception.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        response.put("username", trainer.getUserName());
+        response.put("userName", trainer.getUserName());
         response.put("password", trainer.getPassword());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -82,7 +82,7 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Trainer not found")
     })
     @GetMapping(value = "/{username}")
-    public ResponseEntity<TrainerProfileResponse> getTraineeProfile(
+    public ResponseEntity<TrainerProfileResponse> getTrainerProfile(
             @Parameter(description = "Trainee user name", required = true)
             @PathVariable @NotBlank(message = "Username is required")
             String username) {

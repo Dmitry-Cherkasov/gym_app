@@ -39,19 +39,19 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(description = "Trainee Management System", name = "Trainees")
 public class TraineeController {
+
     @Autowired
-    AuthenticationEntity login;
+    private AuthenticationEntity login;
     private final TraineeDbService traineeService;
-    private final TrainerDBService trainerService;
+
 
     @Autowired
     public TraineeController(TraineeDbService traineeDbService, TrainerDBService trainerDBService) {
         traineeService = traineeDbService;
-        trainerService = trainerDBService;
     }
 
     @PostMapping
-    @Operation( summary= "Register a new Trainee", description = "Creates a new trainee with the provided details")
+    @Operation(summary = "Register a new Trainee", description = "Creates a new trainee with the provided details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Trainee successfully registered"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input")
@@ -80,7 +80,7 @@ public class TraineeController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        response.put("username", trainee.getUserName());
+        response.put("userName", trainee.getUserName());
         response.put("password", trainee.getPassword());
 
         return ResponseEntity.ok(response);
@@ -103,6 +103,7 @@ public class TraineeController {
             Trainee trainee = traineeOptional.get();
             // Map trainee to response DTO
             TraineeProfileResponse response = mapTraineeToResponse(trainee);
+            response.setUserName(trainee.getUserName());
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -110,29 +111,33 @@ public class TraineeController {
     }
 
     @PutMapping
-    @Operation(summary = "Update Trainee Profile", description = "Updates the profile of the logged-in trainee")
+    @Operation(summary = "Update Trainee Profile", description = "Updates profile of the logged-in trainee")
     public ResponseEntity<TraineeProfileResponse> updateTraineeProfile(
             @Parameter(description = "Trainee profile update request body", required = true)
             @Valid @RequestBody
             TraineeProfileUpdateRequest request) {
 
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(login.getUserName(), login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUserName(), login.getPassword());
         if (traineeOpt.isPresent()) {
             Trainee oldTrainee = traineeOpt.get();
+
+            String date = request.getDateOfBirth() != null ? request.getDateOfBirth().toString() : oldTrainee.getDateOfBirth().toString();
+            String address = request.getAddress() != null && !request.getAddress().isBlank() ? request.getAddress() : oldTrainee.getAddress();
+
             traineeService.updateUser(
-                    oldTrainee,
-                    new String[]{
+                    oldTrainee, new String[]{
                             request.getFirstName(),
                             request.getLastName(),
-                            request.getUserName(),
-                            "", //Password can not be changed;
+                            "", //UserName cannot be changed
+                            "", //Password cannot be changed;
                             String.valueOf(request.getIsActive()),
-                            request.getDateOfBirth().toString(),
-                            request.getAddress()});
+                            date,
+                            address});
+
             Trainee updatedTrainee = traineeService.selectByUsername(oldTrainee.getUserName(), oldTrainee.getPassword()).get();
-            TraineeProfileResponse response = mapTraineeToResponse(updatedTrainee);
-            response.setUserName(updatedTrainee.getUserName());
-            response.setUserName(updatedTrainee.getUserName());
+            TraineeProfileResponse response = new TraineeProfileResponse();
+            response = mapTraineeToResponse(updatedTrainee);
+            response.setUserName(oldTrainee.getUserName());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -303,7 +308,7 @@ public class TraineeController {
         Trainee trainee = traineeOpt.get();
 
         try {
-            if(trainee.isActive() != request.getIsActive()) {
+            if (trainee.isActive() != request.getIsActive()) {
                 traineeService.changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
             }
             return new ResponseEntity<>(HttpStatus.OK);

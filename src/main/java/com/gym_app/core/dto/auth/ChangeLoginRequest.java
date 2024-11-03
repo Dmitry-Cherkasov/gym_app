@@ -42,7 +42,7 @@ public class ChangeLoginRequest {
         return isTrainee;
     }
 
-    public void setIsTrainee(boolean trainee) {
-        isTrainee = trainee;
+    public void setIsTrainee(boolean isTrainee) {
+        this.isTrainee = isTrainee;
     }
 }

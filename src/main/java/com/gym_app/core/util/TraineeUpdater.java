@@ -21,8 +21,6 @@ public class TraineeUpdater {
         }
         trainee.setFirstName(params[0]);
         trainee.setLastName(params[1]);
-//        trainee.setUserName(params[2]);
-//        trainee.setPassword(params[3]);
         trainee.setActive(Boolean.parseBoolean(params[4]));
         try {
             LocalDate dateOfBirth = LocalDate.parse(params[5]);

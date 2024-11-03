@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/login")
 @Validated
+@Tag(description = "Authentication management system", name = "Login")
 public class LoginController {
     @Autowired
     private AuthenticationEntity authenticationEntity;
@@ -52,7 +54,7 @@ public class LoginController {
         if (trainerService.authenticate(userName, password) || traineeService.authenticate(userName, password)) {
             authenticationEntity.setUserName(userName);
             authenticationEntity.setPassword(password);
-            System.out.println(authenticationEntity.getUserName() + " " + authenticationEntity.getPassword());
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -101,4 +103,14 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public AuthenticationEntity getAuthenticationEntity() {
+        return authenticationEntity;
+    }
+
+    @Autowired
+    public void setAuthenticationEntity(AuthenticationEntity authenticationEntity) {
+        this.authenticationEntity = authenticationEntity;
+    }
+
 }
