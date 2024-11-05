@@ -109,6 +109,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         }
     }
 
+    @Transactional
     public Training addTraining(String username, String password, Trainer trainer, String trainingName, TrainingType trainingType, LocalDate date, int duration){
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for trainee with username: " + username);

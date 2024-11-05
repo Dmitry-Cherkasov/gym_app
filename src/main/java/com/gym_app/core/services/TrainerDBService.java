@@ -6,6 +6,7 @@ import com.gym_app.core.dto.common.Trainer;
 import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TrainerUpdater;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 
 @Service
+@Transactional
 public class TrainerDBService extends AbstractDbService<Trainer> {
 
     private final TrainerJpaDaoImpl trainerJpaDao;

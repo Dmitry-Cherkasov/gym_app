@@ -4,12 +4,14 @@ import com.gym_app.core.dao.Dao;
 import com.gym_app.core.dao.TrainingMapDaoImplementation;
 import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.util.TrainingUpdater;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 
 @Service
+@Transactional
 public class TrainingService extends AbstractService<Training, Long>{
     private final TrainingMapDaoImplementation trainingDao;
 
