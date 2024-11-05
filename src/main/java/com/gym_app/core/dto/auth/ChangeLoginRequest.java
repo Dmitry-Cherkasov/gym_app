@@ -45,4 +45,6 @@ public class ChangeLoginRequest {
     public void setIsTrainee(boolean isTrainee) {
         this.isTrainee = isTrainee;
     }
+
+
 }

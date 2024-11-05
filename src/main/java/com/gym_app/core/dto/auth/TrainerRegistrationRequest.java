@@ -14,4 +14,5 @@ public class TrainerRegistrationRequest extends RegistrationRequest{
     public void setTrainingType(@NotNull(message = "Specialization (Training Type) cannot be null") TrainingType trainingType) {
         this.trainingType = trainingType;
     }
+
 }

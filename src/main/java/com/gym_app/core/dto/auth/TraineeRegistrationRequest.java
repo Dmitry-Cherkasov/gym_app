@@ -22,4 +22,6 @@ public class TraineeRegistrationRequest extends RegistrationRequest{
     public void setAddress(String address) {
         this.address = address;
     }
+
+
 }
