@@ -22,8 +22,8 @@ import java.util.List;
 public class TraineeDbService extends AbstractDbService<Trainee>{
 
     private final TraineeJpaDaoImpl traineeJpaDao;
-    private TrainingJpaDao trainingJpaDao;
-    private TrainerJpaDaoImpl trainerJpaDao;
+    private final TrainingJpaDao trainingJpaDao;
+    private final TrainerJpaDaoImpl trainerJpaDao;
 
     @Autowired
     public TraineeDbService(TraineeJpaDaoImpl traineeJpaDao, TrainingJpaDao trainingJpaDao, TrainerJpaDaoImpl trainerJpaDao) {
@@ -80,6 +80,9 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         Trainee updated = TraineeUpdater.updateTrainee(trainee, updates);
         try {
             traineeJpaDao.update(trainee, updated);
+            if(trainee.isActive() && !updated.isActive()){
+            } else if(!trainee.isActive() && updated.isActive()){
+            }
         }catch (RuntimeException e){
             throw new RuntimeException("Failed to update trainee " + trainee.getUserName(), e);
         }

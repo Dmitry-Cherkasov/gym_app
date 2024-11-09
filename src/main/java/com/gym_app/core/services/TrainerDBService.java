@@ -6,13 +6,16 @@ import com.gym_app.core.dto.common.Trainer;
 import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
 import com.gym_app.core.util.TrainerUpdater;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Service
@@ -21,9 +24,10 @@ public class TrainerDBService extends AbstractDbService<Trainer> {
 
     private final TrainerJpaDaoImpl trainerJpaDao;
 
+
     @Autowired
-    public TrainerDBService(TrainerJpaDaoImpl trainerJpaDaoDao) {
-        this.trainerJpaDao = trainerJpaDaoDao;
+    public TrainerDBService(TrainerJpaDaoImpl trainerJpaDao) {
+        this.trainerJpaDao = trainerJpaDao;
     }
 
 
@@ -46,9 +50,9 @@ public class TrainerDBService extends AbstractDbService<Trainer> {
         if (!authenticate(username, password)) {
             throw new SecurityException("Authentication failed for trainee with username: " + username);
         }
-        try{
-            return trainerJpaDao.getTrainingsByCriteria(username,fromDate,toDate,traineeName,trainingType);
-        }catch (RuntimeException e){
+        try {
+            return trainerJpaDao.getTrainingsByCriteria(username, fromDate, toDate, traineeName, trainingType);
+        } catch (RuntimeException e) {
             throw new RuntimeException("Error calling trainings list", e);
         }
     }

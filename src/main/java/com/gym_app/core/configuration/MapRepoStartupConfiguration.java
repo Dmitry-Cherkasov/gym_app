@@ -14,12 +14,15 @@ import com.gym_app.core.util.TrainingFactory;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-//@Configuration
+@Configuration
+@Profile({"dev", "local"})
 public class MapRepoStartupConfiguration {
     @Autowired
     private TraineeFactory traineeFactory;
@@ -39,6 +42,9 @@ public class MapRepoStartupConfiguration {
     private String traineeFilePath;
     @Value("${storage.trainings.data.file.path}")
     private String trainingsFilePath;
+    @Autowired
+    private ResourceFileReader reader;
+
 
     @PostConstruct
     public void init() {
@@ -50,7 +56,7 @@ public class MapRepoStartupConfiguration {
     public void addTrainers() {
         ArrayList<String> trainerData;
         try {
-            trainerData = ResourceFileReader.readFile(trainerFilePath);
+            trainerData = reader.readFile(trainerFilePath);
             for (String entry : trainerData) {
                 String[] args = entry.split(",");
                 Trainer trainer = trainerFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), args[3]);
@@ -64,7 +70,7 @@ public class MapRepoStartupConfiguration {
     public void addTrainees() {
         ArrayList<String> traineeData;
         try {
-            traineeData = ResourceFileReader.readFile(traineeFilePath);
+            traineeData = reader.readFile(traineeFilePath);
             for (String entry : traineeData) {
                 String[] args = entry.split(",");
                 Trainee trainee = traineeFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), args[3], args[4]);
@@ -79,7 +85,7 @@ public class MapRepoStartupConfiguration {
     public void addTrainings() {
         ArrayList<String> trainingsData;
         try {
-            trainingsData = ResourceFileReader.readFile(trainingsFilePath);
+            trainingsData = reader.readFile(trainingsFilePath);
             for (String entry : trainingsData) {
                 String[] args = entry.split(",");
                 Training training = trainingFactory.createService(Long.parseLong(args[0]), Long.parseLong(args[1]), args[2], LocalDate.parse(args[3]), Integer.parseInt(args[4]), TrainingType.valueOf(args[5]));

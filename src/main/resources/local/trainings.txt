@@ -1,0 +1,7 @@
+Brian.Lee,John.Smith,Strength Training,2024-10-15,60,RESISTANCE
+Alice.Walker,Emily.Davis,Yoga Class,2024-10-16,45,YOGA
+Daniel.Moore,Michael.Johnson,Cardio Session,2024-10-17,30,ZUMBA
+Clara.Kim,Sarah.Brown,Stretching Routine,2024-10-18,20,STRETCHING
+Frank.Young,David.Jones,Resistance Training,2024-10-19,50,RESISTANCE
+Grace.Hall,Sophia.Taylor,Aerobics,2024-10-20,40,ZUMBA
+Eva.Clark,James.White,Personal Training,2024-10-21,90,YOGA

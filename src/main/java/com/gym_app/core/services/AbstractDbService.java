@@ -4,9 +4,14 @@ import com.gym_app.core.dao.JpaDao;
 import com.gym_app.core.dao.UserJpaDao;
 import com.gym_app.core.dto.common.User;
 import com.gym_app.core.util.PasswordGenerator;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractDbService<T extends User> {
 
@@ -14,13 +19,33 @@ public abstract class AbstractDbService<T extends User> {
     @Autowired
     private UserJpaDao userJpaDao;
 
-    // New abstract method to get the type name
+    @Autowired
+    private MeterRegistry meterRegistry;
+    private final AtomicInteger userTotalCounter;
+    private Counter failedAuthenticationCounter;
+
+
+    public AbstractDbService() {
+        this.userTotalCounter = new AtomicInteger(0);
+        this.failedAuthenticationCounter = null;
+    }
+
+    @PostConstruct
+    public void init() {
+        this.userTotalCounter.set(getDao().getAll().size());
+        this.failedAuthenticationCounter = meterRegistry.counter("gym.authentication.fails");
+        Gauge.builder("gym." + getTypeName() + "s.total", userTotalCounter, AtomicInteger::get)
+                .description("Total " + getTypeName() + "s count")
+                .register(meterRegistry);
+    }
+
     protected abstract String getTypeName();
 
     public T create(T user) {
         user.setUserName(generate(user.getFirstName(), user.getLastName()));
         user.setPassword(PasswordGenerator.createPassword(10));
         try {
+            userTotalCounter.getAndIncrement();
             return getDao().save(user);
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create new " + getTypeName() + ": " + user.getUserName());
@@ -33,6 +58,7 @@ public abstract class AbstractDbService<T extends User> {
         }
         try {
             getDao().deleteByUserName(username);
+            userTotalCounter.getAndDecrement();
         }catch (RuntimeException exception){
             throw new RuntimeException(getTypeName() + " with username " + username + " not found.");
         }
@@ -106,8 +132,14 @@ public abstract class AbstractDbService<T extends User> {
             User user = userOpt.get();
             return user.getPassword().equals(password);
         }
+        failedAuthenticationCounter.increment();
         return false;
     }
 
     protected abstract T updateUser(T user, String[] updates);
+
+    public AtomicInteger getUserTotalCounter() {
+        return userTotalCounter;
+    }
+
 }

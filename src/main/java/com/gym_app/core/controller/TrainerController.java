@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class TrainerController {
     @Autowired
     AuthenticationEntity login;
-    private TrainerDBService trainerDBService;
+    private final TrainerDBService trainerDBService;
 
     @Autowired
     public TrainerController(TrainerDBService trainerDBService) {

@@ -1,7 +1,5 @@
 package com.gym_app.core.configuration;
 
-import com.gym_app.core.dao.TraineeJpaDaoImpl;
-import com.gym_app.core.dao.TrainerJpaDaoImpl;
 import com.gym_app.core.dao.TrainingJpaDao;
 import com.gym_app.core.dto.common.Trainee;
 import com.gym_app.core.dto.common.Trainer;
@@ -24,17 +22,11 @@ import java.util.Random;
 @Configuration
 public class DbStartupConfiguration {
     @Autowired
-    private TraineeJpaDaoImpl traineeJpaDao;
-    @Autowired
-    private TrainerJpaDaoImpl trainerJpaDao;
-    @Autowired
     private TraineeFactory traineeFactory;
     @Autowired
     private TrainingJpaDao trainingJpaDao;
     @Autowired
     private TrainerFactory trainerFactory;
-    @Autowired
-    private TrainingFactory trainingFactory;
     @Autowired
     private TrainerDBService trainerService;
     @Autowired
@@ -47,7 +39,8 @@ public class DbStartupConfiguration {
     private String traineeFilePath;
     @Value("${storage.trainings.data.file.path}")
     private String trainingsFilePath;
-
+    @Autowired
+    private ResourceFileReader reader;
     private ArrayList<Trainee> trainees;
     private ArrayList<Trainer> trainers;
 
@@ -58,12 +51,13 @@ public class DbStartupConfiguration {
         addTrainings();
     }
 
+
     private void addTrainees() {
         trainees = new ArrayList<>();
         ArrayList<String> traineeData;
         Random random = new Random();
         try {
-            traineeData = ResourceFileReader.readFile(traineeFilePath);
+            traineeData = reader.readFile(traineeFilePath);
             for (String entry : traineeData) {
                 String[] args = entry.split(",");
                 Trainee trainee = traineeFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), LocalDate.parse(args[3]));
@@ -83,7 +77,7 @@ public class DbStartupConfiguration {
         trainers = new ArrayList<>();
         ArrayList<String> trainerData;
         try {
-            trainerData = ResourceFileReader.readFile(trainerFilePath);
+            trainerData = reader.readFile(trainerFilePath);
             for (String entry : trainerData) {
                 String[] args = entry.split(",");
                 Trainer trainer = trainerFactory.createUser(args[0], args[1], Boolean.parseBoolean(args[2]), TrainingType.valueOf(args[3]));
