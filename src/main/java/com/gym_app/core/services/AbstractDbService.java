@@ -21,7 +21,7 @@ public abstract class AbstractDbService<T extends User> {
 
     @Autowired
     private MeterRegistry meterRegistry;
-    private final AtomicInteger userTotalCounter;
+    protected final AtomicInteger userTotalCounter;
     private Counter failedAuthenticationCounter;
 
 
@@ -58,7 +58,7 @@ public abstract class AbstractDbService<T extends User> {
         }
         try {
             getDao().deleteByUserName(username);
-            userTotalCounter.getAndDecrement();
+            userTotalCounter.decrementAndGet();
         }catch (RuntimeException exception){
             throw new RuntimeException(getTypeName() + " with username " + username + " not found.");
         }

@@ -69,6 +69,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
             traineeJpaDao.save(trainee);
 
             traineeJpaDao.delete(trainee);
+            userTotalCounter.decrementAndGet();
             return true;
         } catch (RuntimeException e) {
             throw new RuntimeException("Error occurred while deleting trainee with username: " + username, e);
@@ -80,9 +81,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         Trainee updated = TraineeUpdater.updateTrainee(trainee, updates);
         try {
             traineeJpaDao.update(trainee, updated);
-            if(trainee.isActive() && !updated.isActive()){
-            } else if(!trainee.isActive() && updated.isActive()){
-            }
+        
         }catch (RuntimeException e){
             throw new RuntimeException("Failed to update trainee " + trainee.getUserName(), e);
         }
