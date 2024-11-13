@@ -1,11 +1,8 @@
 package com.gym_app.core.dto.auth;
 
-import com.gym_app.core.enums.TrainingType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-
-import java.time.LocalDate;
 
 
 public class RegistrationRequest {

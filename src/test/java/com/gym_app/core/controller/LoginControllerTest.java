@@ -2,6 +2,7 @@ package com.gym_app.core.controller;
 
 import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
+import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +49,10 @@ public class LoginControllerTest {
         when(traineeService.authenticate(userName, password)).thenReturn(false);
 
         // Act
-        ResponseEntity<Void> response = loginController.login(userName, password);
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUserName(userName);
+        loginRequest.setPassword(password);
+        ResponseEntity<Void> response = loginController.login(loginRequest);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -65,7 +69,10 @@ public class LoginControllerTest {
         when(traineeService.authenticate(userName, password)).thenReturn(false);
 
         // Act
-        ResponseEntity<Void> response = loginController.login(userName, password);
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUserName(userName);
+        loginRequest.setPassword(password);
+        ResponseEntity<Void> response = loginController.login(loginRequest);
 
         // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());

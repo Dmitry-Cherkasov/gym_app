@@ -3,6 +3,7 @@ package com.gym_app.core.controller;
 
 import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
+import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,19 +42,15 @@ public class LoginController {
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
             @ApiResponse(responseCode = "401", description = "User authentication failed")
     })
-    @GetMapping
+    @PostMapping
     public ResponseEntity<Void> login(
-            @Parameter(description = "User name", required = true)
-            @RequestParam
-            @NotBlank(message = "Username is required")
-            String userName,
-            @Parameter(description = "Password", required = true)
-            @NotBlank(message = "Password is required")
-            @RequestParam String password) {
+            @RequestBody @Valid LoginRequest loginRequest) {
 
-        if (trainerService.authenticate(userName, password) || traineeService.authenticate(userName, password)) {
-            authenticationEntity.setUserName(userName);
-            authenticationEntity.setPassword(password);
+        if (trainerService.authenticate(loginRequest.getUserName(), loginRequest.getPassword()) ||
+                traineeService.authenticate(loginRequest.getUserName(), loginRequest.getPassword())) {
+
+            authenticationEntity.setUserName(loginRequest.getUserName());
+            authenticationEntity.setPassword(loginRequest.getPassword());
 
             return new ResponseEntity<>(HttpStatus.OK);
         }
