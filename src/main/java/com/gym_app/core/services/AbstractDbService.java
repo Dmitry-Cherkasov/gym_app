@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,7 @@ public abstract class AbstractDbService<T extends User> {
     private MeterRegistry meterRegistry;
     protected final AtomicInteger userTotalCounter;
     private Counter failedAuthenticationCounter;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
     public AbstractDbService() {
@@ -43,10 +45,13 @@ public abstract class AbstractDbService<T extends User> {
 
     public T create(T user) {
         user.setUserName(generate(user.getFirstName(), user.getLastName()));
-        user.setPassword(PasswordGenerator.createPassword(10));
+        String generatedPassword = PasswordGenerator.createPassword(10);
+        user.setPassword(PasswordGenerator.hashPassword(generatedPassword));
         try {
             userTotalCounter.getAndIncrement();
-            return getDao().save(user);
+            getDao().save(user);
+            user.setPassword(generatedPassword);
+            return user;
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to create new " + getTypeName() + ": " + user.getUserName());
         }
@@ -84,7 +89,7 @@ public abstract class AbstractDbService<T extends User> {
 
         try {
             Optional<T> user = getDao().getByUserName(username);
-                getDao().updatePassword(user.get(), newPassword);
+                getDao().updatePassword(user.get(), PasswordGenerator.hashPassword(newPassword));
                 return true;
         } catch (RuntimeException e) {
             throw new RuntimeException("Failed to change password for " + getTypeName() + ": " + username, e);
@@ -130,7 +135,9 @@ public abstract class AbstractDbService<T extends User> {
         Optional<User> userOpt = userJpaDao.getByUserName(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            return user.getPassword().equals(password);
+            System.out.println("Password: " + user.getPassword());// to DELETE
+            // Use BCrypt to compare the provided password with the stored hashed password
+            return passwordEncoder.matches(password, user.getPassword());
         }
         failedAuthenticationCounter.increment();
         return false;

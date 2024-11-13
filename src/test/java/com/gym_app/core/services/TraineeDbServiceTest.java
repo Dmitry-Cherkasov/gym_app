@@ -6,11 +6,14 @@ import com.gym_app.core.dto.common.Trainee;
 import com.gym_app.core.dto.common.Trainer;
 import com.gym_app.core.dto.common.Training;
 import com.gym_app.core.enums.TrainingType;
+import com.gym_app.core.util.PasswordGenerator;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -27,25 +30,35 @@ class TraineeDbServiceTest {
     @Autowired
     private TraineeDbService traineeDbService;
     @Autowired
-    private TrainerJpaDaoImpl trainerJpaDao;
+    private TrainerDBService trainerDBService;
     @Autowired
     private TrainingJpaDao trainingJpaDao;
 
     private Trainee trainee;
     private Trainer trainer;
+    private String password;
 
     @BeforeEach
     void setUp() {
         // Create a new Trainee instance
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
         trainee = new Trainee();
         trainee.setFirstName("Alice");
         trainee.setLastName("Smith");
+        trainee.setUserName("Alice.Smith");
+
+        password = PasswordGenerator.createPassword(10);
+        String hashedPassword = passwordEncoder.encode(password);
+        trainee.setPassword(hashedPassword);
+
         trainee.setActive(true);
         trainee.setDateOfBirth(LocalDate.parse("2004-01-03"));
         trainee.setAddress("Osaka");
-        // Set any other relevant fields for Trainee
-        trainee = traineeDbService.create(trainee); // Save the trainee to the database
-        trainer = trainerJpaDao.save(new Trainer("Red", "One", "Red.One", "password01", true, TrainingType.FITNESS));
+
+        // Save the trainee to the database
+        traineeDbService.getDao().save(trainee);
+        trainer = trainerDBService.create(new Trainer("Red", "One", "Red.One", "password01", true, TrainingType.FITNESS));
 
     }
 
@@ -61,13 +74,14 @@ class TraineeDbServiceTest {
         assertNotNull(createdTrainee);
         assertNotEquals(trainee.getId(), createdTrainee.getId());
         assertEquals("Bob.Brown", createdTrainee.getUserName());
+        assertTrue(traineeDbService.getDao().getAll().contains(createdTrainee));
     }
 
 
     @Test
     void delete_ShouldRemoveTrainee_WhenAuthenticated() {
         assertTrue(traineeDbService.getDao().getAll().contains(trainee));
-        assertDoesNotThrow(() -> traineeDbService.delete(trainee.getUserName(), trainee.getPassword()));
+        assertDoesNotThrow(() -> traineeDbService.delete(trainee.getUserName(), password));
         assertFalse(traineeDbService.getDao().getAll().contains(trainee));
     }
 
@@ -83,7 +97,7 @@ class TraineeDbServiceTest {
     void delete_ShouldRemoveRelevantTrainings() {
         Training training = traineeDbService.addTraining(
                 trainee.getUserName(),
-                trainee.getPassword(),
+                password,
                 trainer,
                 "Test training1",
                 TrainingType.YOGA,
@@ -93,19 +107,19 @@ class TraineeDbServiceTest {
 
 
         assertDoesNotThrow(()-> traineeDbService.addTraining(trainee.getUserName(),
-                trainee.getPassword(),
+                password,
                 trainer,
                 trainer.getSpecialization() + " training",
                 trainer.getSpecialization(),
                 LocalDate.now().plusDays(2),
                 60));
-        assertDoesNotThrow(()-> traineeDbService.delete(trainee.getUserName(), trainee.getPassword()));
+        assertDoesNotThrow(()-> traineeDbService.delete(trainee.getUserName(), password));
         assertFalse(traineeDbService.getDao().getAll().contains(trainee));
     }
 
     @Test
     void selectByUsername_ShouldReturnTrainee_WhenAuthenticated() {
-        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
+        Optional<Trainee> foundTrainee = traineeDbService.selectByUsername(trainee.getUserName(), password);
 
         assertTrue(foundTrainee.isPresent());
         assertEquals(trainee.getId(), foundTrainee.get().getId());
@@ -122,11 +136,12 @@ class TraineeDbServiceTest {
     @Test
     void changePassword_ShouldUpdatePassword_WhenAuthenticated() {
         String newPassword = "newPassword123";
-        traineeDbService.changePassword(newPassword, trainee.getUserName(), trainee.getPassword());
+        traineeDbService.changePassword(newPassword, trainee.getUserName(), password);
 
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), newPassword);
         assertTrue(updatedTrainee.isPresent());
-        assertEquals(newPassword, updatedTrainee.get().getPassword()); // Ensure to verify the password hash if using hashing
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        assertTrue(passwordEncoder.matches(newPassword, updatedTrainee.get().getPassword()));
     }
 
     @Test
@@ -140,8 +155,8 @@ class TraineeDbServiceTest {
     @Test
     void changeStatus_ShouldToggleTraineeStatus_WhenAuthenticated() {
         boolean initialStatus = trainee.isActive();
-        traineeDbService.changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
+        traineeDbService.changeStatus(trainee, trainee.getUserName(), password);
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), password);
         assertTrue(updatedTrainee.isPresent());
         assertNotEquals(initialStatus, updatedTrainee.get().isActive());
     }
@@ -157,9 +172,9 @@ class TraineeDbServiceTest {
     @Test
     void update_ShouldUpdateTrainee_WhenAuthenticated() {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "2024-05-05", "Tokio"}; // Modify as per Trainee fields
-        traineeDbService.update(trainee, trainee.getUserName(), trainee.getPassword(), updates);
+        traineeDbService.update(trainee, trainee.getUserName(), password, updates);
 
-        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), trainee.getPassword());
+        Optional<Trainee> updatedTrainee = traineeDbService.selectByUsername(trainee.getUserName(), password);
         assertTrue(updatedTrainee.isPresent());
         assertEquals("New FirstName", updatedTrainee.get().getFirstName());
         assertEquals("New LastName", updatedTrainee.get().getLastName());
@@ -188,7 +203,7 @@ class TraineeDbServiceTest {
 
         Training training = traineeDbService.addTraining(
                 trainee.getUserName(),
-                trainee.getPassword(),
+                password,
                 trainer,
                 trainer.getSpecialization() + " training",
                 trainer.getSpecialization(),
@@ -196,7 +211,7 @@ class TraineeDbServiceTest {
                 60);
         List<Training> trainings = traineeDbService.getTraineeTrainings(
                 trainee.getUserName(),
-                trainee.getPassword(),
+                password,
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
                 trainer.getUserName(),
@@ -209,7 +224,7 @@ class TraineeDbServiceTest {
     void getAvailableTrainers_Test() {
         List<Trainer> trainings = traineeDbService.getAvailableTrainers(
                 trainee.getUserName(),
-                trainee.getPassword());
+                password);
         assertTrue(trainings.size() > 0);
 
         assertThrows(SecurityException.class, () -> traineeDbService.getAvailableTrainers(
@@ -223,7 +238,7 @@ class TraineeDbServiceTest {
 
         assertDoesNotThrow(() -> traineeDbService.addTraining(
                         trainee.getUserName(),
-                        trainee.getPassword(),
+                        password,
                         trainer,
                         "Test training1",
                         TrainingType.YOGA,
@@ -233,7 +248,7 @@ class TraineeDbServiceTest {
 
         Training training2 = traineeDbService.addTraining(
                 trainee.getUserName(),
-                trainee.getPassword(),
+                password,
                 trainer,
                 "Test training2",
                 TrainingType.STRETCHING,
@@ -255,7 +270,6 @@ class TraineeDbServiceTest {
     @Test
     void testAddTrainerToList_Success() {
         String username = trainee.getUserName();
-        String password = trainee.getPassword();
 
         assertDoesNotThrow(()->traineeDbService.addTrainerToList(username,password,trainer),
                 "");
@@ -275,7 +289,6 @@ class TraineeDbServiceTest {
     @Test
     void testRemoveTrainerFromList_Success() {
         String username = trainee.getUserName();
-        String password = trainee.getPassword();
 
         traineeDbService.addTrainerToList(username,password, trainer);
         assertTrue(traineeDbService.selectByUsername(username,password).get().getTrainers().contains(trainer),
@@ -290,7 +303,6 @@ class TraineeDbServiceTest {
     @Test
     void testGetTraineesTrainers_Success() {
         String username = trainee.getUserName();
-        String password = trainee.getPassword();
 
         traineeDbService.addTrainerToList(username,password, trainer);
         assertTrue(traineeDbService.selectByUsername(username,password).get().getTrainers().contains(trainer),
