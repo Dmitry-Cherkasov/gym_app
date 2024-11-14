@@ -1,6 +1,8 @@
 package com.gym_app.core.configuration;
 
 import com.gym_app.core.dto.auth.AuthenticationEntity;
+import com.gym_app.core.util.LoginProtector;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private LoginProtector loginProtector;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

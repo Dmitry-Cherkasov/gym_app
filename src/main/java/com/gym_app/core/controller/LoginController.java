@@ -6,13 +6,13 @@ import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
+import com.gym_app.core.util.LoginProtector;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
     @Autowired
     private AuthenticationEntity authenticationEntity;
+    @Autowired
+    LoginProtector loginProtector;
     private final TraineeDbService traineeService;
     private final TrainerDBService trainerService;
 
@@ -41,19 +43,27 @@ public class LoginController {
             @ApiResponse(responseCode = "200", description = "User authenticated"),
             @ApiResponse(responseCode = "400", description = "Bad Request - Invalid input"),
             @ApiResponse(responseCode = "401", description = "User authentication failed")
+            @ApiResponse(responseCode = "403", description = "User authentication penalty block")
     })
     @PostMapping
     public ResponseEntity<Void> login(
             @RequestBody @Valid LoginRequest loginRequest) {
+        String userName = loginRequest.getUserName();
+        String password = loginRequest.getPassword();
 
-        if (trainerService.authenticate(loginRequest.getUserName(), loginRequest.getPassword()) ||
-                traineeService.authenticate(loginRequest.getUserName(), loginRequest.getPassword())) {
+        if (trainerService.authenticate(userName, password) ||
+                traineeService.authenticate(userName, password)) {
 
-            authenticationEntity.setUserName(loginRequest.getUserName());
-            authenticationEntity.setPassword(loginRequest.getPassword());
-
+            if (!loginProtector.isBlocked(userName))
+            {
+            authenticationEntity.setUserName(userName);
+            authenticationEntity.setPassword(password);
+            loginProtector.loginSucceeded(userName);
             return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
+        loginProtector.loginFailed(userName);
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
