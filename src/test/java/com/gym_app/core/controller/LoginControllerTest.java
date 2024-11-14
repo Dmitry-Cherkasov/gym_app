@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -52,7 +54,7 @@ public class LoginControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUserName(userName);
         loginRequest.setPassword(password);
-        ResponseEntity<Void> response = loginController.login(loginRequest);
+        ResponseEntity<Map<String,String>> response = loginController.login(loginRequest);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -72,7 +74,7 @@ public class LoginControllerTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUserName(userName);
         loginRequest.setPassword(password);
-        ResponseEntity<Void> response = loginController.login(loginRequest);
+        ResponseEntity<Map<String,String>> response = loginController.login(loginRequest);
 
         // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());

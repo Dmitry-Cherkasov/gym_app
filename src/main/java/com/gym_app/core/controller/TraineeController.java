@@ -13,8 +13,8 @@ import com.gym_app.core.dto.profile.TrainersListUpdateRequest;
 import com.gym_app.core.dto.traininig.TrainingCreateRequest;
 import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.enums.TrainingType;
+import com.gym_app.core.services.JwtTokenProvider;
 import com.gym_app.core.services.TraineeDbService;
-import com.gym_app.core.services.TrainerDBService;
 import com.gym_app.core.util.TrainerSummaryMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,11 +42,14 @@ public class TraineeController {
 
     @Autowired
     private AuthenticationEntity login;
+    @Autowired
+    public JwtTokenProvider jwtTokenProvider;
+
     private final TraineeDbService traineeService;
 
 
     @Autowired
-    public TraineeController(TraineeDbService traineeDbService, TrainerDBService trainerDBService) {
+    public TraineeController(TraineeDbService traineeDbService) {
         traineeService = traineeDbService;
     }
 
@@ -80,6 +83,8 @@ public class TraineeController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
+        String token = jwtTokenProvider.generateToken(trainee.getUserName());
+        response.put("token", token);
         response.put("userName", trainee.getUserName());
         response.put("password", trainee.getPassword());
 

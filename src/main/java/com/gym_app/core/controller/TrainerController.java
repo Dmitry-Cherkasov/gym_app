@@ -9,6 +9,7 @@ import com.gym_app.core.dto.profile.TraineeSummary;
 import com.gym_app.core.dto.profile.TrainerProfileResponse;
 import com.gym_app.core.dto.profile.TrainerProfileUpdateRequest;
 import com.gym_app.core.dto.traininig.TrainingInfo;
+import com.gym_app.core.services.JwtTokenProvider;
 import com.gym_app.core.services.TrainerDBService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,11 +40,14 @@ public class TrainerController {
     @Autowired
     AuthenticationEntity login;
     private final TrainerDBService trainerDBService;
+    @Autowired
+    public JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     public TrainerController(TrainerDBService trainerDBService) {
         this.trainerDBService = trainerDBService;
     }
+
     @Operation( summary= "Register a new Trainer", description = "Creates a new trainer with the provided details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Trainer successfully registered"),
@@ -70,6 +74,9 @@ public class TrainerController {
             response.put("error", "Failed to register trainer: " + exception.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+
+        String token = jwtTokenProvider.generateToken(trainer.getUserName());
+        response.put("token", token);
         response.put("userName", trainer.getUserName());
         response.put("password", trainer.getPassword());
 
