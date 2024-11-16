@@ -44,17 +44,14 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
     }
 
     @Override
-    public boolean delete(String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public boolean delete(String username) {
         try {
             Trainee trainee = traineeJpaDao.getByUserName(username)
                     .orElseThrow(() -> new RuntimeException("Failed to find trainee with username: " + username));
 
             List<Training> trainings = trainee.getTrainings();
             if (trainings != null && !trainings.isEmpty()) {
-                trainings.forEach(training -> trainingJpaDao.delete(training));
+                trainings.forEach(trainingJpaDao::delete);
             }
 
             List<Trainer> trainers = trainee.getTrainers();
@@ -89,10 +86,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
                 orElseThrow(()-> new RuntimeException("Failed to update trainee " + trainee.getUserName()));
     }
 
-    public List<Training> getTraineeTrainings(String username, String password, LocalDate fromDate, LocalDate toDate, String trainerName, TrainingType trainingType) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public List<Training> getTraineeTrainings(String username, LocalDate fromDate, LocalDate toDate, String trainerName, TrainingType trainingType) {
         try{
             return traineeJpaDao.getTrainingsByCriteria(username,fromDate,toDate,trainerName,trainingType);
         }catch (RuntimeException e){
@@ -100,10 +94,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         }
     }
 
-    public List<Trainer> getAvailableTrainers(String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public List<Trainer> getAvailableTrainers(String username) {
         try{
             return traineeJpaDao.getAvailableTrainers(username);
         }catch (RuntimeException e){
@@ -112,10 +103,8 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
     }
 
     @Transactional
-    public Training addTraining(String username, String password, Trainer trainer, String trainingName, TrainingType trainingType, LocalDate date, int duration){
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public Training addTraining(String username, Trainer trainer, String trainingName, TrainingType trainingType, LocalDate date, int duration){
+
         try{
             Training training = new Training();
             Trainee trainee = traineeJpaDao.getByUserName(username).orElseThrow(
@@ -139,10 +128,8 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
 
     }
 
-    public void addTrainerToList(String username, String password, Trainer trainer) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public void addTrainerToList(String username, Trainer trainer) {
+
         try{
             Trainee trainee = traineeJpaDao.getByUserName(username)
                     .orElseThrow(() -> new RuntimeException ("Trainee not found"));
@@ -154,10 +141,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         }
 }
 
-    public void removeTrainerFromList(String username, String password, Trainer trainer) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public void removeTrainerFromList(String username, Trainer trainer) {
         try{
             Trainee trainee = traineeJpaDao.getByUserName(username)
                     .orElseThrow(() -> new RuntimeException ("Trainee not found"));
@@ -168,10 +152,7 @@ public class TraineeDbService extends AbstractDbService<Trainee>{
         }
     }
 
-    public List<Trainer> getTraineesTrainers(String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for trainee with username: " + username);
-        }
+    public List<Trainer> getTraineesTrainers(String username) {
         Trainee trainee = traineeJpaDao.getByUserName(username)
                 .orElseThrow(() -> new RuntimeException("Trainee not found"));
         return trainee.getTrainers();

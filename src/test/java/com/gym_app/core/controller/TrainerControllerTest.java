@@ -1,6 +1,5 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.TrainerRegistrationRequest;
 import com.gym_app.core.dto.common.ToggleActiveRequest;
 import com.gym_app.core.dto.common.Trainee;
@@ -19,8 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
 
 
 import java.time.LocalDate;
@@ -38,25 +35,17 @@ import static org.mockito.Mockito.*;
 @AutoConfigureMockMvc
 class TrainerControllerTest {
 
-    private MockMvc mockMvc;
-
     @Mock
     private TrainerDBService trainerDBService;
 
     @InjectMocks
     private TrainerController trainerController;
 
-    @Mock
-    private AuthenticationEntity login;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        ReflectionTestUtils.setField(trainerController, "login", login);
-
-        when(login.getUserName()).thenReturn("user.test");
-        when(login.getPassword()).thenReturn("testPassword");
     }
 
     @Test
@@ -88,7 +77,7 @@ class TrainerControllerTest {
     @Test
     void getTrainerProfile_ShouldReturnProfile_WhenTrainerExists() throws Exception {
         Trainer trainer = new Trainer("User", "Test", "user.test", "testPassword", true, TrainingType.YOGA);
-        when(trainerDBService.selectByUsername(trainer.getUserName(), trainer.getPassword())).thenReturn(Optional.of(trainer));
+        when(trainerDBService.selectByUsername(trainer.getUserName())).thenReturn(Optional.of(trainer));
 
         ResponseEntity<TrainerProfileResponse> response = trainerController.getTrainerProfile(trainer.getUserName());
 
@@ -98,7 +87,7 @@ class TrainerControllerTest {
 
     @Test
     void getTrainerProfile_ShouldReturnNotFound_WhenTrainerDoesNotExist() throws Exception {
-        when(trainerDBService.selectByUsername(anyString(), anyString())).thenReturn(Optional.empty());
+        when(trainerDBService.selectByUsername(anyString())).thenReturn(Optional.empty());
 
         ResponseEntity<TrainerProfileResponse> response = trainerController.getTrainerProfile("userName");
 
@@ -115,7 +104,7 @@ class TrainerControllerTest {
         request.setIsActive(true);
         request.setSpecialization(TrainingType.YOGA);
 
-        when(trainerDBService.selectByUsername(anyString(), anyString())).
+        when(trainerDBService.selectByUsername(anyString())).
                 thenReturn(Optional.of(oldTrainer)).
                 thenReturn(Optional.of(updatedTrainer));
         when(trainerDBService.updateUser(any(), any())).thenReturn(updatedTrainer);
@@ -134,7 +123,7 @@ class TrainerControllerTest {
         request.setUsername(trainer.getUserName());
         request.setIsActive(false);
 
-        when(trainerDBService.selectByUsername(request.getUsername(), login.getPassword()))
+        when(trainerDBService.selectByUsername(request.getUsername()))
                 .thenReturn(Optional.of(trainer));
 
         // Act
@@ -142,7 +131,7 @@ class TrainerControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(trainerDBService, times(1)).changeStatus(trainer, trainer.getUserName(), trainer.getPassword());
+        verify(trainerDBService, times(1)).changeStatus(trainer, trainer.getUserName());
     }
 
     @Test
@@ -151,7 +140,7 @@ class TrainerControllerTest {
         request.setUsername("non_existing_user");
         request.setIsActive(false);
 
-        when(trainerDBService.selectByUsername(anyString(), anyString())).thenReturn(Optional.empty());
+        when(trainerDBService.selectByUsername(anyString())).thenReturn(Optional.empty());
 
         ResponseEntity<String> response = trainerController.toggleActiveStatus(request);
 
@@ -178,7 +167,7 @@ class TrainerControllerTest {
         training.setTrainee(trainee);
         training.setTrainer(trainer);
 
-        when(trainerDBService.selectByUsername(username, login.getPassword())).thenReturn(Optional.of(trainer));
+        when(trainerDBService.selectByUsername(username)).thenReturn(Optional.of(trainer));
         when(trainerDBService.getTrainerTrainings(username, trainer.getPassword(), periodFrom, periodTo, traineeName, trainingType))
                 .thenReturn(List.of(training));
 

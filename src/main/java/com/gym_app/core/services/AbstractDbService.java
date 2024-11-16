@@ -57,10 +57,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public boolean delete(String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
+    public boolean delete(String username) {
         try {
             getDao().deleteByUserName(username);
             userTotalCounter.decrementAndGet();
@@ -71,10 +68,7 @@ public abstract class AbstractDbService<T extends User> {
     }
 
 
-    public Optional<T> selectByUsername(String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
+    public Optional<T> selectByUsername(String username) {
         try {
             return getDao().getByUserName(username);
         } catch (RuntimeException e) {
@@ -82,11 +76,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public boolean changePassword(String newPassword, String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
-
+    public boolean changePassword(String newPassword, String username) {
         try {
             Optional<T> user = getDao().getByUserName(username);
                 getDao().updatePassword(user.get(), PasswordGenerator.hashPassword(newPassword));
@@ -96,10 +86,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public void changeStatus(T user, String username, String password) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
+    public void changeStatus(T user, String username) {
         try {
             getDao().changeStatus(user);
         } catch (RuntimeException e) {
@@ -107,10 +94,7 @@ public abstract class AbstractDbService<T extends User> {
         }
     }
 
-    public void update(T oldEntity, String username, String password, String[] updates) {
-        if (!authenticate(username, password)) {
-            throw new SecurityException("Authentication failed for " + getTypeName() + " with username: " + username);
-        }
+    public void update(T oldEntity, String username, String[] updates) {
         try {
             getDao().update(oldEntity, updateUser(oldEntity, updates));
         } catch (RuntimeException e) {
@@ -131,17 +115,6 @@ public abstract class AbstractDbService<T extends User> {
         return userName;
     }
 
-    public boolean authenticate(String username, String password) {
-        Optional<User> userOpt = userJpaDao.getByUserName(username);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            System.out.println("Password: " + user.getPassword());// to DELETE
-            // Use BCrypt to compare the provided password with the stored hashed password
-            return passwordEncoder.matches(password, user.getPassword());
-        }
-        failedAuthenticationCounter.increment();
-        return false;
-    }
 
     protected abstract T updateUser(T user, String[] updates);
 

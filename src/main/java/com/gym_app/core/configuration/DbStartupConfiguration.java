@@ -67,7 +67,7 @@ public class DbStartupConfiguration {
                 trainee.setPassword(PasswordGenerator.createPassword(10));
                 trainee.setAddress(args[4]);
                 trainee = traineeService.create(trainee);
-                traineeService.addTrainerToList(trainee.getUserName(), trainee.getPassword(), trainers.get(random.nextInt(5)));
+                traineeService.addTrainerToList(trainee.getUserName(), trainers.get(random.nextInt(5)));
                 trainees.add(trainee);
             }
         } catch (IOException e) {
@@ -99,7 +99,7 @@ public class DbStartupConfiguration {
             Trainee trainee = trainees.get(random.nextInt(trainees.size()));
             Trainer trainer = trainers.get(random.nextInt(trainers.size()));
             try{
-                traineeService.addTraining(trainee.getUserName(),trainee.getPassword(),
+                traineeService.addTraining(trainee.getUserName(),
                         trainer, trainer.getSpecialization() + " traininig",
                         trainer.getSpecialization(), LocalDate.now().plusDays(2), 90);
             }catch (RuntimeException exception){

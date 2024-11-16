@@ -1,6 +1,5 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.TrainerRegistrationRequest;
 import com.gym_app.core.dto.common.ToggleActiveRequest;
 import com.gym_app.core.dto.common.Trainer;
@@ -37,8 +36,6 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(description = "Trainer Management System", name = "Trainers")
 public class TrainerController {
-    @Autowired
-    AuthenticationEntity login;
     private final TrainerDBService trainerDBService;
     @Autowired
     public JwtTokenProvider jwtTokenProvider;
@@ -94,7 +91,7 @@ public class TrainerController {
             @PathVariable @NotBlank(message = "Username is required")
             String username) {
 
-        Optional<Trainer> trainerOptional = trainerDBService.selectByUsername(username, login.getPassword());
+        Optional<Trainer> trainerOptional = trainerDBService.selectByUsername(username);
         if (trainerOptional.isPresent()) {
             Trainer trainer = trainerOptional.get();
             TrainerProfileResponse response = mapTrainerToResponse(trainer);
@@ -109,7 +106,7 @@ public class TrainerController {
     public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(
             @Parameter(description = "Trainer profile update request body", required = true)
             @Valid @RequestBody TrainerProfileUpdateRequest request) {
-        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(login.getUserName(), login.getPassword());
+        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(request.getUserName());
         if (trainerOpt.isPresent()) {
             Trainer oldTrainer = trainerOpt.get();
             trainerDBService.updateUser(oldTrainer, new String[]{
@@ -121,7 +118,7 @@ public class TrainerController {
                     request.getSpecialization().toString()
             });
 
-            Trainer updatedTrainer = trainerDBService.selectByUsername(oldTrainer.getUserName(), oldTrainer.getPassword()).get();
+            Trainer updatedTrainer = trainerDBService.selectByUsername(oldTrainer.getUserName()).get();
             TrainerProfileResponse response = mapTrainerToResponse(updatedTrainer);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -140,7 +137,7 @@ public class TrainerController {
             @RequestParam(required = false) LocalDate periodTo,
             @Parameter(description = "Trainee's name filter", required = false)
             @RequestParam(required = false) String traineeName) {
-        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(username, login.getPassword());
+        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(username);
         if (trainerOpt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -148,7 +145,6 @@ public class TrainerController {
         Trainer trainer = trainerOpt.get();
         List<Training> trainings = trainerDBService.getTrainerTrainings(
                 username,
-                login.getPassword(),
                 periodFrom,
                 periodTo,
                 traineeName,
@@ -180,7 +176,7 @@ public class TrainerController {
     public ResponseEntity<String> toggleActiveStatus(
             @Parameter(description = "Trainer active status request body", required = true)
             @Valid @RequestBody ToggleActiveRequest request) {
-        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(request.getUsername(), login.getPassword());
+        Optional<Trainer> trainerOpt = trainerDBService.selectByUsername(request.getUsername());
 
         if (trainerOpt.isEmpty()) {
             return new ResponseEntity<>("Trainer not found", HttpStatus.NOT_FOUND);
@@ -190,7 +186,7 @@ public class TrainerController {
 
         try {
             if(trainer.isActive() != request.getIsActive()) {
-                trainerDBService.changeStatus(trainer, trainer.getUserName(), trainer.getPassword());
+                trainerDBService.changeStatus(trainer, trainer.getUserName());
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {

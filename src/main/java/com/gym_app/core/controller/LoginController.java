@@ -1,7 +1,6 @@
 package com.gym_app.core.controller;
 
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
@@ -32,8 +31,6 @@ import java.util.Map;
 @Tag(description = "Authentication management system", name = "Login")
 public class LoginController {
     @Autowired
-    private AuthenticationEntity authenticationEntity;
-    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private LoginProtector loginProtector;
@@ -61,29 +58,27 @@ public class LoginController {
         String userName = loginRequest.getUserName();
         String password = loginRequest.getPassword();
 
-        Authentication authentication = authenticationManager.
-                authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+        if (loginProtector.isBlocked(userName)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
 
-        if (trainerService.authenticate(userName, password) ||
-                traineeService.authenticate(userName, password)) {
-
-            if (!loginProtector.isBlocked(userName))
-            {
-            authenticationEntity.setUserName(userName);
-            authenticationEntity.setPassword(password);
-            loginProtector.loginSucceeded(userName);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userName, password));
 
             String token = jwtTokenProvider.generateToken(userName);
 
-            HashMap<String,String> response = new HashMap<>();
+            loginProtector.loginSucceeded(userName);
+
+            Map<String, String> response = new HashMap<>();
             response.put("token", token);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        } catch (Exception ex) {
+            loginProtector.loginFailed(userName);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        loginProtector.loginFailed(userName);
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @Operation(summary = "Logout", description = "User system logout")
@@ -130,13 +125,12 @@ public class LoginController {
         try {
             boolean updated;
             if (request.isTrainee()) {
-                updated = traineeService.changePassword(newPassword, userName, oldPassword);
+                updated = traineeService.changePassword(newPassword, userName);
             } else {
-                updated = trainerService.changePassword(newPassword, userName, oldPassword);
+                updated = trainerService.changePassword(newPassword, userName);
             }
 
             if (updated) {
-                authenticationEntity.setPassword(newPassword);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -147,18 +141,8 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             System.err.println("Unexpected error during password change for user: " + userName);
-            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    public AuthenticationEntity getAuthenticationEntity() {
-        return authenticationEntity;
-    }
-
-    @Autowired
-    public void setAuthenticationEntity(AuthenticationEntity authenticationEntity) {
-        this.authenticationEntity = authenticationEntity;
     }
 
 }

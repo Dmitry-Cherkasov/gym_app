@@ -1,6 +1,5 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
@@ -29,8 +28,6 @@ public class LoginControllerTest {
     @Mock
     private TrainerDBService trainerService;
 
-    @Mock
-    private AuthenticationEntity authenticationEntity;
 
     @InjectMocks
     private LoginController loginController;
@@ -91,7 +88,7 @@ public class LoginControllerTest {
         request.setNewPassword("newPassword");
         request.setIsTrainee(true);
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName(), request.getOldPassword())).thenReturn(true);
+        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(true);
 
         // Act
         ResponseEntity<Void> response = loginController.changePassword(request);
@@ -110,7 +107,7 @@ public class LoginControllerTest {
         request.setNewPassword("newPassword");
         request.setIsTrainee(false);
 
-        when(trainerService.changePassword(request.getNewPassword(), request.getUserName(), request.getOldPassword())).thenReturn(true);
+        when(trainerService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(true);
 
         // Act
         ResponseEntity<Void> response = loginController.changePassword(request);
@@ -129,7 +126,7 @@ public class LoginControllerTest {
         request.setNewPassword("newPassword");
         request.setIsTrainee(true);
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName(), request.getOldPassword())).thenReturn(false);
+        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(false);
 
         // Act
         ResponseEntity<Void> response = loginController.changePassword(request);
@@ -159,7 +156,7 @@ public class LoginControllerTest {
         request.setNewPassword("newPassword");
         request.setIsTrainee(true);
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName(), request.getOldPassword())).thenThrow(new RuntimeException("Unexpected error"));
+        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenThrow(new RuntimeException("Unexpected error"));
 
         // Act
         ResponseEntity<Void> response = loginController.changePassword(request);

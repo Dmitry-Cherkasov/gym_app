@@ -1,6 +1,5 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.TraineeRegistrationRequest;
 import com.gym_app.core.dto.common.ToggleActiveRequest;
 import com.gym_app.core.dto.common.Trainee;
@@ -40,8 +39,6 @@ import java.util.stream.Collectors;
 @Tag(description = "Trainee Management System", name = "Trainees")
 public class TraineeController {
 
-    @Autowired
-    private AuthenticationEntity login;
     @Autowired
     public JwtTokenProvider jwtTokenProvider;
 
@@ -103,7 +100,7 @@ public class TraineeController {
             @NotBlank(message = "Username is required")
             String username) {
 
-        Optional<Trainee> traineeOptional = traineeService.selectByUsername(username, login.getPassword()); //needs password from session context
+        Optional<Trainee> traineeOptional = traineeService.selectByUsername(username); //needs password from session context
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
             // Map trainee to response DTO
@@ -122,7 +119,7 @@ public class TraineeController {
             @Valid @RequestBody
             TraineeProfileUpdateRequest request) {
 
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUserName(), login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUserName());
         if (traineeOpt.isPresent()) {
             Trainee oldTrainee = traineeOpt.get();
 
@@ -139,7 +136,7 @@ public class TraineeController {
                             date,
                             address});
 
-            Trainee updatedTrainee = traineeService.selectByUsername(oldTrainee.getUserName(), oldTrainee.getPassword()).get();
+            Trainee updatedTrainee = traineeService.selectByUsername(oldTrainee.getUserName()).get();
             TraineeProfileResponse response = new TraineeProfileResponse();
             response = mapTraineeToResponse(updatedTrainee);
             response.setUserName(oldTrainee.getUserName());
@@ -158,7 +155,7 @@ public class TraineeController {
             @Parameter(description = "Username of the trainee to be deleted", required = true)
             @NotBlank(message = "Username is required") @PathVariable String username) {
 
-        boolean isDeleted = traineeService.delete(username, login.getPassword());
+        boolean isDeleted = traineeService.delete(username);
         if (isDeleted) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -172,10 +169,11 @@ public class TraineeController {
             @Parameter(description = "Username of the trainee", required = true)
             @NotBlank(message = "Username is required") @PathVariable String username) {
 
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(username);
         if (traineeOpt.isPresent()) {
+            Trainee trainee = traineeOpt.get();
             List<TrainerSummary> trainers = traineeService.
-                    getAvailableTrainers(login.getUserName(), login.getPassword()).
+                    getAvailableTrainers(trainee.getUserName()).
                     stream().
                     map(TrainerSummaryMapper::mapTrainerToSummary).
                     toList();
@@ -193,7 +191,7 @@ public class TraineeController {
             @Parameter(description = "Trainee's trainers list update request", required = true)
             @Valid @RequestBody TrainersListUpdateRequest request) {
 
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername());
         if (traineeOpt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -202,13 +200,13 @@ public class TraineeController {
 
         HashMap<String, Trainer> allTrainers = new HashMap<>();
 
-        traineeService.getAvailableTrainers(login.getUserName(), login.getPassword()).
+        traineeService.getAvailableTrainers(trainee.getUserName()).
                 forEach(trainer -> allTrainers.put(trainer.getUserName(), trainer));
 
         trainee.getTrainers().forEach(trainer -> allTrainers.put(trainer.getUserName(), trainer));
         List<Trainer> updatedTrainers = request.getTrainersList().stream().map(allTrainers::get).toList();
 
-        updatedTrainers.forEach(trainer -> traineeService.addTrainerToList(login.getUserName(), login.getPassword(), trainer));
+        updatedTrainers.forEach(trainer -> traineeService.addTrainerToList(trainee.getUserName(), trainer));
 
         List<TrainerSummary> response = updatedTrainers.
                 stream()
@@ -231,14 +229,13 @@ public class TraineeController {
             @RequestParam(required = false) String trainerName,
             @Parameter(description = "Training type filter", required = false)
             @RequestParam(required = false) TrainingType trainingType) {
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(username, login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(username);
         if (traineeOpt.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Trainee trainee = traineeOpt.get();
         List<Training> trainings = traineeService.getTraineeTrainings(
                 username,
-                trainee.getPassword(),
                 periodFrom,
                 periodTo,
                 trainerName,
@@ -267,9 +264,9 @@ public class TraineeController {
     public ResponseEntity<String> addTraining(
             @Parameter(description = "Training request body", required = true)
             @Valid @RequestBody TrainingCreateRequest request) {
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername(), login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getTraineeUsername());
         Optional<Trainer> trainerOpt = traineeService.
-                getAvailableTrainers(request.getTraineeUsername(), login.getPassword()).
+                getAvailableTrainers(request.getTraineeUsername()).
                 stream().
                 filter(trainer -> trainer.getUserName().equals(request.getTrainerUsername())).findAny();
 
@@ -283,7 +280,6 @@ public class TraineeController {
         try {
             traineeService.addTraining(
                     trainee.getUserName(),
-                    trainee.getPassword(),
                     trainer,
                     request.getTrainingName(),
                     trainer.getSpecialization(),
@@ -304,7 +300,7 @@ public class TraineeController {
     public ResponseEntity<String> toggleActiveStatus(
             @Parameter(description = "Trainee active status request body", required = true)
             @Valid @RequestBody ToggleActiveRequest request) {
-        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUsername(), login.getPassword());
+        Optional<Trainee> traineeOpt = traineeService.selectByUsername(request.getUsername());
 
         if (traineeOpt.isEmpty()) {
             return new ResponseEntity<>("Trainee not found", HttpStatus.NOT_FOUND);
@@ -314,7 +310,7 @@ public class TraineeController {
 
         try {
             if (trainee.isActive() != request.getIsActive()) {
-                traineeService.changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
+                traineeService.changeStatus(trainee, trainee.getUserName());
             }
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {

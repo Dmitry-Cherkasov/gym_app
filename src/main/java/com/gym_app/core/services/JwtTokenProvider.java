@@ -1,10 +1,13 @@
 package com.gym_app.core.services;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import jakarta.xml.bind.DatatypeConverter;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -18,7 +21,7 @@ public class JwtTokenProvider {
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
     private long expiration;
-    private final ConcurrentHashMap<String, String> validTokens  = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> validTokens = new ConcurrentHashMap<>();
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 
@@ -33,7 +36,7 @@ public class JwtTokenProvider {
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims =  Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
                 .parseClaimsJws(token)
@@ -46,20 +49,61 @@ public class JwtTokenProvider {
         return new SecretKeySpec(keyBytes, signatureAlgorithm.getJcaName());
     }
 
+    @Synchronized
     public boolean isValid(String token) {
-        if(!validTokens.contains(token)) return false;
         try {
-            Jwts.parser().setSigningKey(getSignKey()).parseClaimsJws(token);
-            return true;
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSignKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String username = claims.getSubject();
+            return validTokens.containsKey(username) && validTokens.get(username).equals(token);
+        } catch (ExpiredJwtException e) {
+            System.out.println("Token has expired: " + e.getMessage());
+            return false;
         } catch (Exception e) {
+            System.out.println("Invalid token: " + e.getMessage());
             return false;
         }
     }
 
-    public void invalidateToken(String token){
+    public void invalidateToken(String token) {
         String userName = getUsernameFromToken(token);
-        validTokens.remove(token);
+        validTokens.remove(userName);
     }
 
+    @Scheduled(fixedRate = 60000) // Runs every minute
+    public void cleanupExpiredTokens() {
+        validTokens.entrySet().removeIf(entry -> {
+            String token = entry.getValue();
+            try {
+                Jwts.parserBuilder()
+                        .setSigningKey(getSignKey())
+                        .build()
+                        .parseClaimsJws(token);
+                return false; // Token is still valid
+            } catch (ExpiredJwtException e) {
+                return true; // Remove expired token
+            }
+        });
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public long getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(long expiration) {
+        this.expiration = expiration;
+    }
 }
 

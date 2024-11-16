@@ -1,6 +1,5 @@
 package com.gym_app.core.controller;
 
-import com.gym_app.core.dto.auth.AuthenticationEntity;
 import com.gym_app.core.dto.auth.TraineeRegistrationRequest;
 import com.gym_app.core.dto.common.ToggleActiveRequest;
 import com.gym_app.core.dto.common.Trainer;
@@ -43,8 +42,6 @@ public class TraineeControllerTest {
     @Mock
     private TrainerDBService trainerService;
 
-    @Mock
-    private AuthenticationEntity login;
 
     @InjectMocks
     private TraineeController traineeController;
@@ -103,7 +100,8 @@ public class TraineeControllerTest {
     public void testGetTraineeProfile_Success() {
         // Arrange
         Trainee trainee = new Trainee("John", "Doe", "testUser", "password", true, LocalDate.of(2000, 1, 1), "123 Main St");
-        when(traineeService.selectByUsername("testUser", "testPassword")).thenReturn(Optional.of(trainee));
+        when(traineeService.selectByUsername("testUser"
+        )).thenReturn(Optional.of(trainee));
 
         // Act
         ResponseEntity<TraineeProfileResponse> response = traineeController.getTraineeProfile("testUser");
@@ -130,7 +128,7 @@ public class TraineeControllerTest {
         request.setIsActive(updatedTrainee.isActive());
 
         // Mock the selectByUsername calls
-        when(traineeService.selectByUsername("testUser", "testPassword"))
+        when(traineeService.selectByUsername("testUser"))
                 .thenReturn(Optional.of(oldTrainee)).
                 thenReturn(Optional.of(updatedTrainee));
 
@@ -148,7 +146,7 @@ public class TraineeControllerTest {
     @Test
     public void testDeleteTraineeProfile_Success() {
         // Arrange
-        when(traineeService.delete("johndoe", "testPassword")).thenReturn(true);
+        when(traineeService.delete("johndoe")).thenReturn(true);
 
         // Act
         ResponseEntity<Void> response = traineeController.deleteTraineeProfile("johndoe");
@@ -161,10 +159,10 @@ public class TraineeControllerTest {
     public void testGetAvailableTrainers_Success() {
         // Arrange
         Trainee trainee = new Trainee("John", "Doe", "testUser", "testPassword", true, LocalDate.of(2000, 1, 1), "123 Main St");
-        when(traineeService.selectByUsername("testUser", login.getPassword())).thenReturn(Optional.of(trainee));
+        when(traineeService.selectByUsername("testUser")).thenReturn(Optional.of(trainee));
         Trainer trainer1 = new Trainer("Arvan", "Stern", "Ar.Stern", "password12345", true, TrainingType.FITNESS);
         Trainer trainer2 = new Trainer("Green", "Peace", "GreenP", "password12345678", true, TrainingType.ZUMBA);
-        when(traineeService.getAvailableTrainers("testUser", login.getPassword())).thenReturn(Arrays.asList(trainer1, trainer2));
+        when(traineeService.getAvailableTrainers("testUser")).thenReturn(Arrays.asList(trainer1, trainer2));
 
         // Act
         ResponseEntity<List<TrainerSummary>> response = traineeController.getAvailableTrainers("testUser");
@@ -189,10 +187,10 @@ public class TraineeControllerTest {
         request.setTraineeUsername(traineeUsername);
         request.setTrainersList(List.of(trainerUsername1, trainerUsername2));
 
-        when(traineeService.selectByUsername(traineeUsername, login.getPassword())).thenReturn(Optional.of(trainee));
-        when(traineeService.getAvailableTrainers(anyString(), anyString())).thenReturn(List.of(trainer1, trainer2));
+        when(traineeService.selectByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
+        when(traineeService.getAvailableTrainers(anyString())).thenReturn(List.of(trainer1, trainer2));
 
-        doNothing().when(traineeService).addTrainerToList(anyString(), anyString(), any(Trainer.class));
+        doNothing().when(traineeService).addTrainerToList(anyString(), any(Trainer.class));
 
         // Act
         ResponseEntity<List<TrainerSummary>> response = traineeController.updateTraineeTrainerList(request);
@@ -224,8 +222,8 @@ public class TraineeControllerTest {
         training.setTrainee(trainee);
         training.setTrainer(trainer);
 
-        when(traineeService.selectByUsername(username, login.getPassword())).thenReturn(Optional.of(trainee));
-        when(traineeService.getTraineeTrainings(username, trainee.getPassword(), periodFrom, periodTo, trainerName, trainingType))
+        when(traineeService.selectByUsername(username)).thenReturn(Optional.of(trainee));
+        when(traineeService.getTraineeTrainings(username, periodFrom, periodTo, trainerName, trainingType))
                 .thenReturn(List.of(training));
 
         // Act
@@ -235,14 +233,14 @@ public class TraineeControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         assertEquals("ZUMBA training", response.getBody().get(0).getTrainingName());
-        verify(traineeService, times(1)).getTraineeTrainings(username, trainee.getPassword(), periodFrom, periodTo, trainerName, trainingType);
+        verify(traineeService, times(1)).getTraineeTrainings(username, periodFrom, periodTo, trainerName, trainingType);
     }
 
     @Test
     public void testAddTraining_Success() {
         // Arrange
         Trainee trainee = new Trainee("John", "Doe", "testUser", "testPassword", true, LocalDate.of(2000, 1, 1), "123 Main St");
-        when(traineeService.selectByUsername("testUser", login.getPassword())).thenReturn(Optional.of(trainee));
+        when(traineeService.selectByUsername("testUser")).thenReturn(Optional.of(trainee));
 
         Trainer trainer = new Trainer("Green", "Peace", "GreenP", "password12345678", true, TrainingType.ZUMBA);
         TrainingCreateRequest trainingRequest = new TrainingCreateRequest();
@@ -252,7 +250,7 @@ public class TraineeControllerTest {
         trainingRequest.setTrainingDate(LocalDate.now());
         trainingRequest.setTrainingDuration(60);
 
-        when(traineeService.getAvailableTrainers("testUser", login.getPassword())).thenReturn(Arrays.asList(trainer));
+        when(traineeService.getAvailableTrainers("testUser")).thenReturn(Arrays.asList(trainer));
 
         // Act
         ResponseEntity<String> response = traineeController.addTraining(trainingRequest);
@@ -270,7 +268,7 @@ public class TraineeControllerTest {
         request.setUsername(trainee.getUserName());
         request.setIsActive(false);
 
-        when(traineeService.selectByUsername(request.getUsername(), login.getPassword()))
+        when(traineeService.selectByUsername(request.getUsername()))
                 .thenReturn(Optional.of(trainee));
 
         // Act
@@ -278,7 +276,7 @@ public class TraineeControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(traineeService, times(1)).changeStatus(trainee, trainee.getUserName(), trainee.getPassword());
+        verify(traineeService, times(1)).changeStatus(trainee, trainee.getUserName());
     }
 
     @Test
@@ -287,7 +285,7 @@ public class TraineeControllerTest {
         ToggleActiveRequest request = new ToggleActiveRequest();
         request.setUsername("nonexistentUser");
         request.setIsActive(false);
-        when(traineeService.selectByUsername(request.getUsername(), "password"))
+        when(traineeService.selectByUsername(request.getUsername()))
                 .thenReturn(Optional.empty());
 
         // Act
@@ -296,6 +294,6 @@ public class TraineeControllerTest {
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Trainee not found", response.getBody());
-        verify(traineeService, never()).changeStatus(any(), anyString(), anyString());
+        verify(traineeService, never()).changeStatus(any(), anyString());
     }
 }

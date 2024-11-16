@@ -56,7 +56,6 @@ class TrainerDBServiceTest {
 
         training = traineeDbService.addTraining(
                 trainee.getUserName(),
-                traineePass,
                 trainer,
                 trainer.getSpecialization() + " training",
                 trainer.getSpecialization(),
@@ -88,20 +87,20 @@ class TrainerDBServiceTest {
 
     @Test
     void delete_ShouldRemoveTrainer_WhenAuthenticated() {
-        assertDoesNotThrow(() -> trainerDBService.delete(trainer.getUserName(), password));
+        assertDoesNotThrow(() -> trainerDBService.delete(trainer.getUserName()));
     }
 
     @Test
     void delete_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.delete(trainer.getUserName(), "wrongPassword"));
+                () -> trainerDBService.delete(trainer.getUserName()));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
 
     @Test
     void selectByUsername_ShouldReturnTrainer_WhenAuthenticated() {
-        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername(trainer.getUserName(), password);
+        Optional<Trainer> foundTrainer = trainerDBService.selectByUsername(trainer.getUserName());
 
         assertTrue(foundTrainer.isPresent());
         assertEquals(trainer.getId(), foundTrainer.get().getId());
@@ -110,7 +109,7 @@ class TrainerDBServiceTest {
     @Test
     void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.selectByUsername(trainer.getUserName(), "wrongPassword"));
+                () -> trainerDBService.selectByUsername(trainer.getUserName()));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
@@ -118,10 +117,10 @@ class TrainerDBServiceTest {
     @Test
     void changePassword_ShouldUpdatePassword_WhenAuthenticated() {
         String newPassword = "newPassword123";
-        trainerDBService.changePassword(newPassword, trainer.getUserName(), password);
+        trainerDBService.changePassword(newPassword, trainer.getUserName());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), newPassword);
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName());
         assertTrue(updatedTrainer.isPresent());
         assertTrue(passwordEncoder.matches(newPassword, updatedTrainer.get().getPassword())); // Ensure to verify the password hash if using hashing
     }
@@ -129,7 +128,7 @@ class TrainerDBServiceTest {
     @Test
     void changePassword_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.changePassword("newPassword123", trainer.getUserName(), "wrongPassword"));
+                () -> trainerDBService.changePassword("newPassword123", trainer.getUserName()));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
@@ -137,8 +136,8 @@ class TrainerDBServiceTest {
     @Test
     void changeStatus_ShouldToggleTrainerStatus_WhenAuthenticated() {
         boolean initialStatus = trainer.isActive();
-        trainerDBService.changeStatus(trainer, trainer.getUserName(), password);
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), password);
+        trainerDBService.changeStatus(trainer, trainer.getUserName());
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName());
         assertTrue(updatedTrainer.isPresent());
         System.out.println(trainer.isActive() + "   " + updatedTrainer.get().isActive());
         assertNotEquals(initialStatus, updatedTrainer.get().isActive());
@@ -147,7 +146,7 @@ class TrainerDBServiceTest {
     @Test
     void changeStatus_ShouldThrowException_WhenAuthenticationFails() {
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.changeStatus(trainer, trainer.getUserName(), "wrongPassword"));
+                () -> trainerDBService.changeStatus(trainer, trainer.getUserName()));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
@@ -155,8 +154,8 @@ class TrainerDBServiceTest {
     @Test
     void update_ShouldUpdateTrainer_WhenAuthenticated() {
         String[] updates = {"New FirstName", "New LastName", "NewUsername", "NewPassword", "true", "FITNESS"};
-        trainerDBService.update(trainer, trainer.getUserName(), password, updates);
-        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName(), password);
+        trainerDBService.update(trainer, trainer.getUserName(), updates);
+        Optional<Trainer> updatedTrainer = trainerDBService.selectByUsername(trainer.getUserName());
 
         assertTrue(updatedTrainer.isPresent());
         assertEquals("New FirstName", updatedTrainer.get().getFirstName());
@@ -168,7 +167,7 @@ class TrainerDBServiceTest {
     void update_ShouldThrowException_WhenAuthenticationFails() {
         String[] updates = {"New FirstName", "New LastName", "NEW_SPECIALIZATION"};
         SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.update(trainer, trainer.getUserName(), "wrongPassword", updates));
+                () -> trainerDBService.update(trainer, trainer.getUserName(), updates));
 
         assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
     }
