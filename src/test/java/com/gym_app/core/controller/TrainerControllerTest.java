@@ -168,7 +168,7 @@ class TrainerControllerTest {
         training.setTrainer(trainer);
 
         when(trainerDBService.selectByUsername(username)).thenReturn(Optional.of(trainer));
-        when(trainerDBService.getTrainerTrainings(username, trainer.getPassword(), periodFrom, periodTo, traineeName, trainingType))
+        when(trainerDBService.getTrainerTrainings(username, periodFrom, periodTo, traineeName, trainingType))
                 .thenReturn(List.of(training));
 
         // Act
@@ -178,6 +178,6 @@ class TrainerControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         assertEquals("ZUMBA training", response.getBody().get(0).getTrainingName());
-        verify(trainerDBService, times(1)).getTrainerTrainings(username, trainer.getPassword(), periodFrom, periodTo, traineeName, trainingType);
+        verify(trainerDBService, times(1)).getTrainerTrainings(username, periodFrom, periodTo, traineeName, trainingType);
     }
 }

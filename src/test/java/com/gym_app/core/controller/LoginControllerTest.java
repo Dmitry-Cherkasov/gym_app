@@ -36,7 +36,6 @@ public class LoginControllerTest {
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
-        ReflectionTestUtils.setField(loginController, "authenticationEntity", authenticationEntity);
     }
 
     @Test
@@ -44,8 +43,6 @@ public class LoginControllerTest {
         // Arrange
         String userName = "testUser";
         String password = "testPassword";
-        when(trainerService.authenticate(userName, password)).thenReturn(true);
-        when(traineeService.authenticate(userName, password)).thenReturn(false);
 
         // Act
         LoginRequest loginRequest = new LoginRequest();
@@ -55,8 +52,7 @@ public class LoginControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(authenticationEntity).setUserName(userName);
-        verify(authenticationEntity).setPassword(password);
+
     }
 
     @Test
@@ -64,8 +60,7 @@ public class LoginControllerTest {
         // Arrange
         String userName = "testUser";
         String password = "wrongPassword";
-        when(trainerService.authenticate(userName, password)).thenReturn(false);
-        when(traineeService.authenticate(userName, password)).thenReturn(false);
+
 
         // Act
         LoginRequest loginRequest = new LoginRequest();
@@ -75,8 +70,7 @@ public class LoginControllerTest {
 
         // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        verify(authenticationEntity, never()).setUserName(any());
-        verify(authenticationEntity, never()).setPassword(any());
+
     }
 
     @Test
@@ -95,7 +89,6 @@ public class LoginControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(authenticationEntity).setPassword("newPassword");
     }
 
     @Test
@@ -114,7 +107,7 @@ public class LoginControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(authenticationEntity).setPassword("newPassword");
+
     }
 
     @Test

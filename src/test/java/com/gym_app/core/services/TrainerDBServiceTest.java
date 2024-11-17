@@ -175,8 +175,7 @@ class TrainerDBServiceTest {
     @Test
     void getTrainerTrainings_Test() {
         assertThrows(SecurityException.class, () -> trainerDBService.getTrainerTrainings(
-                        trainer.getUserName(),
-                        "wrongPassword",
+                        "wrongTrainer",
                         LocalDate.now(),
                         LocalDate.now().plusDays(10),
                         "David.Jones",
@@ -186,7 +185,6 @@ class TrainerDBServiceTest {
 
         List<Training> trainings = trainerDBService.getTrainerTrainings(
                 trainer.getUserName(),
-                password,
                 LocalDate.now(),
                 LocalDate.now().plusDays(10),
                 "Test.Trainee",

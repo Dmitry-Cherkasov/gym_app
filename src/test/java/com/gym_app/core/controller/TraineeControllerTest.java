@@ -51,10 +51,6 @@ public class TraineeControllerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        ReflectionTestUtils.setField(traineeController, "login", login);
-        // Setting up a mock user for the login context
-            when(login.getUserName()).thenReturn("testUser");
-            when(login.getPassword()).thenReturn("testPassword");
 
     }
 
