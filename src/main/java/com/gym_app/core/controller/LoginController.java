@@ -67,7 +67,6 @@ public class LoginController {
         try {
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-            System.out.println("Authentication details " + authentication.getDetails()); //To REMOVE!
             String token = jwtTokenProvider.generateToken(userName);
 
             loginProtector.loginSucceeded(userName);
