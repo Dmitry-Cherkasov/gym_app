@@ -2,13 +2,17 @@ package com.gym_app.core.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.gym_app.core.dao.UserJpaDao;
+import com.gym_app.core.services.JwtTokenProvider;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,9 +25,13 @@ import java.util.Map;
 
 @WebMvcTest(GlobalExceptionHandler.class)
 @ExtendWith(MockitoExtension.class)
+@MockBean(JwtTokenProvider.class)
+@MockBean(UserJpaDao.class)
 class GlobalExceptionHandlerTest {
 
     private MockMvc mockMvc;
+    @MockBean
+    JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private GlobalExceptionHandler exceptionHandler;

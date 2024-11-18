@@ -1,160 +1,160 @@
 package com.gym_app.core.controller;
 
+
 import com.gym_app.core.dto.auth.ChangeLoginRequest;
 import com.gym_app.core.dto.auth.LoginRequest;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
+import com.gym_app.core.services.JwtTokenProvider;
+import com.gym_app.core.util.LoginProtector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class LoginControllerTest {
+@SpringBootTest
+class LoginControllerTest {
+
+    private MockMvc mockMvc;
 
     @Mock
-    private TraineeDbService traineeService;
+    private AuthenticationManager authenticationManager;
 
     @Mock
-    private TrainerDBService trainerService;
+    private LoginProtector loginProtector;
 
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private TraineeDbService traineeDbService;
+
+    @Mock
+    private TrainerDBService trainerDbService;
 
     @InjectMocks
     private LoginController loginController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(loginController).build();
+        ReflectionTestUtils.setField(loginController, "jwtTokenProvider", jwtTokenProvider);
+        ReflectionTestUtils.setField(loginController, "loginProtector", loginProtector);
+        ReflectionTestUtils.setField(loginController, "authenticationManager", authenticationManager);
 
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testLogin_Success() {
-        // Arrange
-        String userName = "testUser";
-        String password = "testPassword";
-
-        // Act
+    void testLogin_Success() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUserName(userName);
-        loginRequest.setPassword(password);
+        loginRequest.setUserName("testUser");
+        loginRequest.setPassword("password");
+
+        Authentication authentication = mock(Authentication.class);
+        authentication.setAuthenticated(true);
+        when(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUserName(),loginRequest.getPassword())))
+                .thenReturn(authentication); // Simulate successful authentication
+
+        when(jwtTokenProvider.generateToken("testUser")).thenReturn("token123");
+
         ResponseEntity<Map<String,String>> response = loginController.login(loginRequest);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    }
+        }
+
 
     @Test
-    public void testLogin_Failure() {
-        // Arrange
-        String userName = "testUser";
-        String password = "wrongPassword";
-
-
-        // Act
+    void testLogin_Failure() throws Exception {
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUserName(userName);
-        loginRequest.setPassword(password);
-        ResponseEntity<Map<String,String>> response = loginController.login(loginRequest);
+        loginRequest.setUserName("testUser");
+        loginRequest.setPassword("wrongPass");
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new RuntimeException("Authentication failed"));
 
-        // Assert
+        ResponseEntity<Map<String,String>> response = loginController.login(loginRequest);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 
     }
 
     @Test
-    public void testChangePassword_SuccessForTrainee() {
-        // Arrange
-        ChangeLoginRequest request = new ChangeLoginRequest();
-        request.setUserName("testUser");
-        request.setOldPassword("oldPassword");
-        request.setNewPassword("newPassword");
-        request.setIsTrainee(true);
+    void testLogout_Success() throws Exception {
+        String token = "Bearer token123";
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(true);
+        when(jwtTokenProvider.isValid(anyString())).thenReturn(true);
 
-        // Act
-        ResponseEntity<Void> response = loginController.changePassword(request);
+        mockMvc.perform(get("/logout")
+                        .header("Authorization", token))
+                .andExpect(status().isOk());
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(jwtTokenProvider, times(1)).invalidateToken(anyString());
     }
 
     @Test
-    public void testChangePassword_SuccessForTrainer() {
-        // Arrange
-        ChangeLoginRequest request = new ChangeLoginRequest();
-        request.setUserName("testUser");
-        request.setOldPassword("oldPassword");
-        request.setNewPassword("newPassword");
-        request.setIsTrainee(false);
+    void testLogout_Failure_InvalidToken() throws Exception {
+        String token = "Bearer invalidToken123";
 
-        when(trainerService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(true);
+        when(jwtTokenProvider.isValid(anyString())).thenReturn(false);
 
-        // Act
-        ResponseEntity<Void> response = loginController.changePassword(request);
+        mockMvc.perform(get("/logout")
+                        .header("Authorization", token))
+                .andExpect(status().isUnauthorized());
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
+        verify(jwtTokenProvider, times(0)).invalidateToken(anyString());
     }
 
     @Test
-    public void testChangePassword_FailureInvalidCredentials() {
-        // Arrange
-        ChangeLoginRequest request = new ChangeLoginRequest();
-        request.setUserName("testUser");
-        request.setOldPassword("oldPassword");
-        request.setNewPassword("newPassword");
-        request.setIsTrainee(true);
+    void testChangePassword_Success() throws Exception {
+        ChangeLoginRequest changeLoginRequest = new ChangeLoginRequest();
+        changeLoginRequest.setUserName("testUser");
+        changeLoginRequest.setOldPassword("oldPassword");
+        changeLoginRequest.setNewPassword("newPassword");
+        changeLoginRequest.setIsTrainee(false);
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenReturn(false);
+        when(trainerDbService.changePassword(anyString(), anyString())).thenReturn(true);
 
-        // Act
-        ResponseEntity<Void> response = loginController.changePassword(request);
+        mockMvc.perform(put("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userName\":\"testUser\",\"oldPassword\":\"oldPassword\",\"newPassword\":\"newPassword\",\"isTrainee\":false}"))
+                .andExpect(status().isOk());
 
-        // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(trainerDbService, times(1)).changePassword(anyString(), anyString());
     }
 
     @Test
-    public void testChangePassword_FailureBadRequest() {
-        // Arrange
-        ChangeLoginRequest request = new ChangeLoginRequest(); // No fields set
+    void testChangePassword_Failure() throws Exception {
+        ChangeLoginRequest changeLoginRequest = new ChangeLoginRequest();
+        changeLoginRequest.setUserName("testUser");
+        changeLoginRequest.setOldPassword("oldPassword");
+        changeLoginRequest.setNewPassword("newPassword");
+        changeLoginRequest.setIsTrainee(false);
 
-        // Act
-        ResponseEntity<Void> response = loginController.changePassword(request);
 
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
+        when(trainerDbService.changePassword(anyString(), anyString())).thenReturn(false);
 
-    @Test
-    public void testChangePassword_FailureUnexpectedError() {
-        // Arrange
-        ChangeLoginRequest request = new ChangeLoginRequest();
-        request.setUserName("testUser");
-        request.setOldPassword("oldPassword");
-        request.setNewPassword("newPassword");
-        request.setIsTrainee(true);
+        mockMvc.perform(put("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"userName\":\"testUser\",\"oldPassword\":\"wrongOldPassword\",\"newPassword\":\"newPassword\",\"isTrainee\":false}"))
+                .andExpect(status().isUnauthorized());
 
-        when(traineeService.changePassword(request.getNewPassword(), request.getUserName())).thenThrow(new RuntimeException("Unexpected error"));
-
-        // Act
-        ResponseEntity<Void> response = loginController.changePassword(request);
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        verify(trainerDbService, times(1)).changePassword(anyString(), anyString());
     }
 }

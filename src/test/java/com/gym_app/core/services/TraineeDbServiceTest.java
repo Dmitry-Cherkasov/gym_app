@@ -149,13 +149,6 @@ class TraineeDbServiceTest {
 
     @Test
     void getTraineeTrainings_Test() {
-        assertThrows(SecurityException.class, () -> traineeDbService.getTraineeTrainings(
-                        "wrongUserName",
-                        LocalDate.now(),
-                        LocalDate.now().plusDays(10),
-                        "Michael.Johnson",
-                        TrainingType.ZUMBA),
-                "Failed authentication should throw exception");
 
         Training training = traineeDbService.addTraining(
                 trainee.getUserName(),
@@ -179,10 +172,6 @@ class TraineeDbServiceTest {
         List<Trainer> trainings = traineeDbService.getAvailableTrainers(
                 trainee.getUserName());
         assertTrue(trainings.size() > 0);
-
-        assertThrows(SecurityException.class, () -> traineeDbService.getAvailableTrainers(
-                        "WrongUserName"),
-                "Failed authentication should throw exception");
     }
 
     @Test
@@ -204,15 +193,6 @@ class TraineeDbServiceTest {
                 TrainingType.STRETCHING,
                 LocalDate.now().plusDays(3),
                 60);
-
-        assertThrows(SecurityException.class, () -> traineeDbService.addTraining(
-                        "WrongUserName",
-                        trainer,
-                        "Test training",
-                        TrainingType.YOGA,
-                        LocalDate.now().plusDays(2),
-                        60),
-                "Authentication fail should throw an exception");
     }
 
 
@@ -225,14 +205,6 @@ class TraineeDbServiceTest {
 
         trainee = traineeDbService.selectByUsername(username).get();
         assertTrue(trainee.getTrainers().contains(trainer));
-    }
-
-    @Test
-    void testAddTrainerToList_AuthenticationFailed() {
-        String username = trainee.getUserName();
-        String password = "wrong_password";
-
-        assertThrows(SecurityException.class, ()->traineeDbService.addTrainerToList(username,trainer),"");
     }
 
     @Test

@@ -62,10 +62,12 @@ public class LoginController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(userName, password));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, password);
 
+        try {
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+            System.out.println("Authentication details " + authentication.getDetails()); //To REMOVE!
             String token = jwtTokenProvider.generateToken(userName);
 
             loginProtector.loginSucceeded(userName);

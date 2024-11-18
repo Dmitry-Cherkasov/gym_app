@@ -9,6 +9,7 @@ import com.gym_app.core.dto.profile.TrainerProfileResponse;
 import com.gym_app.core.dto.profile.TrainerProfileUpdateRequest;
 import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.enums.TrainingType;
+import com.gym_app.core.services.JwtTokenProvider;
 import com.gym_app.core.services.TrainerDBService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 
 
 import java.time.LocalDate;
@@ -31,12 +33,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 
-
 @AutoConfigureMockMvc
 class TrainerControllerTest {
 
     @Mock
     private TrainerDBService trainerDBService;
+
+    @Mock
+    JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private TrainerController trainerController;
@@ -45,7 +49,7 @@ class TrainerControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
+        ReflectionTestUtils.setField(trainerController, "jwtTokenProvider", jwtTokenProvider);
     }
 
     @Test
@@ -58,7 +62,7 @@ class TrainerControllerTest {
         Trainer trainer = new Trainer("John", "Doe", "user.test", "testPassword", true, TrainingType.YOGA);
         when(trainerDBService.create(any())).thenReturn(trainer);
 
-        ResponseEntity<Map<String, String >> response = trainerController.registerTrainer(request);
+        ResponseEntity<Map<String, String>> response = trainerController.registerTrainer(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("user.test", response.getBody().get("userName"));
@@ -104,7 +108,7 @@ class TrainerControllerTest {
         request.setIsActive(true);
         request.setSpecialization(TrainingType.YOGA);
 
-        when(trainerDBService.selectByUsername(anyString())).
+        when(trainerDBService.selectByUsername("user.test")).
                 thenReturn(Optional.of(oldTrainer)).
                 thenReturn(Optional.of(updatedTrainer));
         when(trainerDBService.updateUser(any(), any())).thenReturn(updatedTrainer);

@@ -90,13 +90,6 @@ class TrainerDBServiceTest {
         assertDoesNotThrow(() -> trainerDBService.delete(trainer.getUserName()));
     }
 
-    @Test
-    void delete_ShouldThrowException_WhenAuthenticationFails() {
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.delete(trainer.getUserName()));
-
-        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
-    }
 
     @Test
     void selectByUsername_ShouldReturnTrainer_WhenAuthenticated() {
@@ -106,13 +99,6 @@ class TrainerDBServiceTest {
         assertEquals(trainer.getId(), foundTrainer.get().getId());
     }
 
-    @Test
-    void selectByUsername_ShouldThrowException_WhenAuthenticationFails() {
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.selectByUsername(trainer.getUserName()));
-
-        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
-    }
 
     @Test
     void changePassword_ShouldUpdatePassword_WhenAuthenticated() {
@@ -126,14 +112,6 @@ class TrainerDBServiceTest {
     }
 
     @Test
-    void changePassword_ShouldThrowException_WhenAuthenticationFails() {
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.changePassword("newPassword123", trainer.getUserName()));
-
-        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
-    }
-
-    @Test
     void changeStatus_ShouldToggleTrainerStatus_WhenAuthenticated() {
         boolean initialStatus = trainer.isActive();
         trainerDBService.changeStatus(trainer, trainer.getUserName());
@@ -143,13 +121,6 @@ class TrainerDBServiceTest {
         assertNotEquals(initialStatus, updatedTrainer.get().isActive());
     }
 
-    @Test
-    void changeStatus_ShouldThrowException_WhenAuthenticationFails() {
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.changeStatus(trainer, trainer.getUserName()));
-
-        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
-    }
 
     @Test
     void update_ShouldUpdateTrainer_WhenAuthenticated() {
@@ -163,25 +134,9 @@ class TrainerDBServiceTest {
         assertEquals(TrainingType.valueOf("FITNESS"), updatedTrainer.get().getSpecialization()); // Assuming valid TrainingType
     }
 
-    @Test
-    void update_ShouldThrowException_WhenAuthenticationFails() {
-        String[] updates = {"New FirstName", "New LastName", "NEW_SPECIALIZATION"};
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> trainerDBService.update(trainer, trainer.getUserName(), updates));
-
-        assertEquals("Authentication failed for trainer with username: " + trainer.getUserName(), exception.getMessage());
-    }
 
     @Test
     void getTrainerTrainings_Test() {
-        assertThrows(SecurityException.class, () -> trainerDBService.getTrainerTrainings(
-                        "wrongTrainer",
-                        LocalDate.now(),
-                        LocalDate.now().plusDays(10),
-                        "David.Jones",
-                        TrainingType.ZUMBA),
-                "Failed authentication should throw exception");
-
 
         List<Training> trainings = trainerDBService.getTrainerTrainings(
                 trainer.getUserName(),

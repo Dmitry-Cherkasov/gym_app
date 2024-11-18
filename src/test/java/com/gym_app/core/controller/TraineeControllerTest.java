@@ -12,6 +12,7 @@ import com.gym_app.core.dto.profile.TrainersListUpdateRequest;
 import com.gym_app.core.dto.traininig.TrainingCreateRequest;
 import com.gym_app.core.dto.traininig.TrainingInfo;
 import com.gym_app.core.enums.TrainingType;
+import com.gym_app.core.services.JwtTokenProvider;
 import com.gym_app.core.services.TraineeDbService;
 import com.gym_app.core.services.TrainerDBService;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,9 @@ public class TraineeControllerTest {
     @Mock
     private TrainerDBService trainerService;
 
+    @Mock
+    JwtTokenProvider jwtTokenProvider;
+
 
     @InjectMocks
     private TraineeController traineeController;
@@ -50,7 +54,7 @@ public class TraineeControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-
+        ReflectionTestUtils.setField(traineeController, "jwtTokenProvider", jwtTokenProvider);
 
     }
 
